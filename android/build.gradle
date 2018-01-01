@@ -1,0 +1,58 @@
+buildscript {
+    repositories {
+        google()
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.3.3'
+
+        // NOTE: Do not place your application dependencies here; they belong
+        // in the individual module build.gradle files
+    }
+}
+
+apply plugin: "com.android.library"
+
+android {
+    compileSdkVersion 25
+    buildToolsVersion "25.0.2"
+
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 23
+        versionCode 1
+        versionName "1.0"
+        ndk {
+            abiFilters "armeabi-v7a", "x86"
+        }
+    }
+    buildTypes {
+        release {
+            minifyEnabled enableProguardInReleaseBuilds
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+        }
+    }
+}
+
+allprojects {
+    repositories {
+        jcenter()
+        mavenLocal()
+        maven {
+              url "https://maven.google.com"
+        }
+    }
+}
+
+
+dependencies {
+    compile fileTree(dir: "libs", include: ["*.jar"])
+    compile "com.android.support:appcompat-v7:25.3.1"
+    compile "com.facebook.react:react-native:+"  // From node_modules
+    compile 'com.google.android.gms:play-services-gcm:10.2.6'
+
+    compile 'me.leolin:ShortcutBadger:1.1.18@aar'
+
+    // chabok-lib
+    compile 'com.adpdigital.push:chabok-lib:2.9.1'
+}
