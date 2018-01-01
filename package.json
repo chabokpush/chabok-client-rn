@@ -1,0 +1,34 @@
+{
+  "name": "react-native-chabok",
+  "version": "1.0.0",
+  "description": "react native wrapper for chabok push notification",
+  "main": "lib/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chabokpush/chabok-client-rn.git"
+  },
+  "dependencies": {
+    "react": "16.0.0",
+    "react-native": "0.51.0"
+  },
+  "devDependencies": {
+    "babel-jest": "21.2.0",
+    "babel-preset-react-native": "4.0.0",
+    "jest": "21.2.1",
+    "react-test-renderer": "16.0.0"
+  },
+  "keywords": [
+    "chabok",
+    "push",
+    "notification"
+  ],
+  "author": "Mohammad Kouchi <kouchi.mohammad@gmail.com>",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/chabokpush/chabok-client-rn/issues"
+  },
+  "homepage": "https://github.com/chabokpush/chabok-client-rn#readme"
+}
