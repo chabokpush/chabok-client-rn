@@ -33,6 +33,7 @@ android/.signing/
 android/.signing/
 
 # User-specific configurations
+.idea
 android/.idea/gradle.xml
 android/.idea/libraries/
 android/.idea/workspace.xml
