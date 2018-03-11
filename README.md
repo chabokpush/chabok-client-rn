@@ -18,7 +18,7 @@ import * as chabok from 'react-native-chabok';
 ```
 Or, if you're not using ES6 modules:
 ```
-const chabokpush = require('react-native-chabok');
+const chabok = require('react-native-chabok');
 ```
 
 ### Basic Usage
