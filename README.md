@@ -9,7 +9,7 @@ For java-part, library refrence and library initialization that includes seting 
 to install npm package:
 
 ```yarn
-npm install react-native-chabok --save
+yarn add react-native-chabok
 ```
 or
 ```bash
