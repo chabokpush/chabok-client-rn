@@ -4,7 +4,7 @@ This client library supports react-native to use chabok push library.
 A Wrapper around native library to use chabok functionalities in react-native environment.
 
 ## installation
-For java-part, library refrence and library initialization that includes seting up: `APP_ID`, `API_KEY`, `SDK_USERNAME`,  `SDK_PASSWORD` and platform specific parts regarding library reference for ios, and installatin details refer to [docs](https://doc.chabokpush.com/react-native/setup.html).
+For java-part, library refrence and library initialization that includes seting up: `APP_ID`, `API_KEY`, `SDK_USERNAME`,  `SDK_PASSWORD` and platform specific parts regarding library reference for ios, and installatin details refer to [docs](https://doc.chabokpush.com/react-native-bridge/introducing.html).
 
 to install npm package:
 
@@ -16,16 +16,11 @@ or
 npm install react-native-chabok --save
 ```
 
-## import
-
-```javascript
-import * as chabok from 'react-native-chabok';
-```
-
-
 ## Basic Usage
 
 ```javascript
+    import * as chabok from 'react-native-chabok';
+
     const USER = "react_native_user_ID";
     var channels = ["ipl", "private/demo", "wall", "my_channel"];
     this.chabok = new chabok.AdpPushClient();
