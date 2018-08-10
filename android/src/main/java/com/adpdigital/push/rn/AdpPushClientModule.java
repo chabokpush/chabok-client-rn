@@ -11,6 +11,7 @@ import android.util.Log;
 import com.adpdigital.push.AdpPushClient;
 import com.adpdigital.push.Callback;
 import com.adpdigital.push.ConnectionStatus;
+import com.adpdigital.push.PushMessage;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
@@ -74,7 +75,7 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
     public void initializeApp(String appName, ReadableMap options, com.facebook.react.bridge.Callback callback) {
 
         activityClass = getMainActivityClass();
-        if (chabok == null && activityClass != null) {
+        if (chabok == null) {
             chabok = AdpPushClient.init(
                     getReactApplicationContext(),
                     activityClass,
@@ -90,15 +91,60 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
 
             //chabok.addListener(getReactApplicationContext());
             attachChabokClient();
+        }
 
+        if (activityClass != null) {
             WritableMap response = Arguments.createMap();
             response.putString("result", "success");
+            callback.invoke(response);
+        } else { // TODO improve sending error or mechanism
+            WritableMap response = Arguments.createMap();
+            response.putString("result", "failed");
             callback.invoke(response);
         }
     }
 
     public void onEvent(ConnectionStatus status) {
+        /* TODO this function does nothing!! there is no event-bus
+         * search for usage on updateConnectionStatus and you will
+         * see how connection status changes.
+         */
         updateConnectionStatus(status);
+    }
+
+    public void onEvent(PushMessage message) {
+        /* TODO this function does not work properly.
+         * there is no event-bus to send events so we can catch them here.
+         * we should implement that event-bus first. (see: PushMessageReceiver.java)
+         * */
+
+        final PushMessage msg = message;
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                WritableMap response = Arguments.createMap();
+                response.putString("alertText", msg.getAlertText());
+                response.putString("alertTitle", msg.getAlertTitle());
+                response.putString("body", msg.getBody());
+                response.putString("intentType", msg.getIntentType());
+                response.putString("senderId", msg.getSenderId());
+                response.putString("sentId", msg.getSentId());
+                response.putString("id", msg.getId());
+                response.putString("sound", msg.getSound());
+                response.putString("channel", msg.getChannel());
+
+                response.putDouble("receivedAt", msg.getReceivedAt());
+                response.putDouble("createdAt", msg.getCreatedAt());
+                response.putDouble("expireAt", msg.getExpireAt());
+
+                // TODO jsonObject to hash!
+                //response.putMap("data", msg.getData());
+                //response.putMap("notification", msg.getNotification());
+
+                sendEvent("ChabokMessageReceived", response);
+            }
+        });
     }
 
     private void attachChabokClient() {
@@ -134,7 +180,7 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
             @Override
             public void run() {
                 String statusValue = connectionStatus.toString();
-                sendEvent("status",statusValue);
+                sendEvent("connectionStatus",statusValue);
             }
         });
     }
@@ -274,6 +320,7 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
         });
     }
 
+    @ReactMethod
     public void subscribe(String channel, final Promise promise) {
         if(!TextUtils.isEmpty(channel)) {
             chabok.subscribe(channel, true, new Callback() {
@@ -292,7 +339,8 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
         }
     }
 
-    public void unSubscribe(String channel, final Promise promise) {
+    @ReactMethod
+    public void unsubscribe(String channel, final Promise promise) {
         if(!TextUtils.isEmpty(channel)) {
             chabok.unsubscribe(channel, new Callback() {
                 @Override
@@ -385,7 +433,7 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
         @Override
         public void onReceive(Context context, Intent intent) {
             String status = intent.getStringExtra("status");
-            sendEvent("status", status);
+            sendEvent("connectionStatus", status);
         }
     }
 }
