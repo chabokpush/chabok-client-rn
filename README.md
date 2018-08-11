@@ -178,7 +178,7 @@ didFailToRegisterForRemoteNotificationsWithError:error];
     import chabok from 'react-native-chabok';
 
     const USER = "react_native_user_ID";
-    var channels = ["ipl", "private/demo", "wall", "my_channel"];
+    var channels = ["sport", "private/news"];
     this.chabok = new chabok.AdpPushClient();
 
     const chabokEmitter = new NativeEventEmitter(chabok.module);
@@ -207,12 +207,12 @@ didFailToRegisterForRemoteNotificationsWithError:error];
         });
         
     // publish message
-    chabok.publish(channel, msg)
+    this.chabok.publish(channel, msg)
         .then(res => console.log(res))
         .catch(error => console.log(error));
     
     // unsubscribe
-    chabok.unSubscribe(channel)
+    this.chabok.unSubscribe(channel)
         .then(res => () => {
                 console.log(res);
             })
