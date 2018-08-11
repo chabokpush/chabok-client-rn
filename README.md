@@ -145,7 +145,7 @@ target 'YOUR_TARGET_NAME' do
 end
 ```
 
-3.Open the iOS project with .xcworkspace file in Xcode and also, open the `node_modules/react-native-chabok/` directory. Move the `ios/AdpPushClient.h` and `ios/AdpPushClient.m` files to your project.
+3. Open the iOS project with .xcworkspace file in Xcode and also, open the `node_modules/react-native-chabok/` directory. Move the `ios/AdpPushClient.h` and `ios/AdpPushClient.m` files to your project.
 
 4. Import inside `AppDelegate`:
 ```
@@ -173,48 +173,49 @@ didFailToRegisterForRemoteNotificationsWithError:error];
 
 
 ## Basic Usage
+In your `App.js`:
 
 ```javascript
-    import chabok from 'react-native-chabok';
+import chabok from 'react-native-chabok';
 
-    const USER = "react_native_user_ID";
-    var channels = ["sport", "private/news"];
-    this.chabok = new chabok.AdpPushClient();
+const USER = "react_native_user_ID";
+var channels = ["sport", "private/news"];
+this.chabok = new chabok.AdpPushClient();
 
-    const chabokEmitter = new NativeEventEmitter(chabok.module);
+const chabokEmitter = new NativeEventEmitter(chabok.module);
 
-    chabokEmitter.addListener(
-      'connectionStatus',
-      (status) => {
-        console.log('connectionStatus', status)
-      }
-    );
+chabokEmitter.addListener(
+  'connectionStatus',
+  (status) => {
+    console.log('connectionStatus', status)
+  }
+);
 
-    chabokEmitter.addListener(
-      'ChabokMessageReceived',
-      (message) => {
-        console.log("\nChabok Message Received :", message);
-      }
-    );
+chabokEmitter.addListener(
+  'ChabokMessageReceived',
+  (message) => {
+    console.log("\nChabok Message Received :", message);
+  }
+);
 
-    // register to chabok service
-    this.chabok.register(USER, channels);
+// register to chabok service
+this.chabok.register(USER, channels);
 
-    // subscribe to channel
-    this.chabok.subscribe(channel).then(res => () => {
-            console.log(res);
-            alert('subscribe success');
-        });
-        
-    // publish message
-    this.chabok.publish(channel, msg)
-        .then(res => console.log(res))
-        .catch(error => console.log(error));
+// subscribe to channel
+this.chabok.subscribe(channel).then(res => () => {
+        console.log(res);
+        alert('subscribe success');
+    });
     
-    // unsubscribe
-    this.chabok.unSubscribe(channel)
-        .then(res => () => {
-                console.log(res);
-            })
-        .catch(error => console.log(error));
+// publish message
+this.chabok.publish(channel, msg)
+    .then(res => console.log(res))
+    .catch(error => console.log(error));
+
+// unsubscribe
+this.chabok.unSubscribe(channel)
+    .then(res => () => {
+            console.log(res);
+        })
+    .catch(error => console.log(error));
 ```
