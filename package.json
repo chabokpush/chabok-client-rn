@@ -5,11 +5,14 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
+  "nativePackage": true,
   "repository": {
     "type": "git",
     "url": "git+https://github.com/chabokpush/chabok-client-rn.git"
   },
-  "dependencies": {
+  "peerDependencies": {
+    "react": ">=0.14.5",
+    "react-native": ">=0.25.1"
   },
   "devDependencies": {
     "babel-jest": "23.4.2",
@@ -26,6 +29,11 @@
   "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/chabokpush/chabok-client-rn/issues"
+  },
+  "babel": {
+    "presets": [
+      "react-native"
+    ]
   },
   "homepage": "https://github.com/chabokpush/chabok-client-rn#readme"
 }
