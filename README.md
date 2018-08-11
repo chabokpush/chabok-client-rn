@@ -182,7 +182,7 @@ const USER = "react_native_user_ID";
 var channels = ["sport", "private/news"];
 this.chabok = new chabok.AdpPushClient();
 
-const chabokEmitter = new NativeEventEmitter(chabok.module);
+const chabokEmitter = new NativeEventEmitter(NativeModules.AdpPushClient);
 
 chabokEmitter.addListener(
   'connectionStatus',
