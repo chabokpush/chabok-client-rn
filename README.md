@@ -175,11 +175,27 @@ didFailToRegisterForRemoteNotificationsWithError:error];
 ## Basic Usage
 
 ```javascript
-    import * as chabok from 'react-native-chabok';
+    import chabok from 'react-native-chabok';
 
     const USER = "react_native_user_ID";
     var channels = ["ipl", "private/demo", "wall", "my_channel"];
     this.chabok = new chabok.AdpPushClient();
+
+    const chabokEmitter = new NativeEventEmitter(chabok.module);
+
+    chabokEmitter.addListener(
+      'connectionStatus',
+      (status) => {
+        console.log('connectionStatus', status)
+      }
+    );
+
+    chabokEmitter.addListener(
+      'ChabokMessageReceived',
+      (message) => {
+        console.log("\nChabok Message Received :", message);
+      }
+    );
 
     // register to chabok service
     this.chabok.register(USER, channels);
