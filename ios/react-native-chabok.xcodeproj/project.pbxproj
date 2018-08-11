@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		95F9B92D211EF48100C16151 /* AdpPushClient.m in Sources */ = {isa = PBXBuildFile; fileRef = 95F9B92B211EF48100C16151 /* AdpPushClient.m */; };
+		95F9B92F211F00F700C16151 /* AdpPushClient.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 95F9B92E211F00F700C16151 /* AdpPushClient.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -26,6 +27,7 @@
 		95F9B91C211EF3E200C16151 /* libreact-native-chabok.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libreact-native-chabok.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		95F9B92B211EF48100C16151 /* AdpPushClient.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AdpPushClient.m; sourceTree = "<group>"; };
 		95F9B92C211EF48100C16151 /* AdpPushClient.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdpPushClient.h; sourceTree = "<group>"; };
+		95F9B92E211F00F700C16151 /* AdpPushClient.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AdpPushClient.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -33,6 +35,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				95F9B92F211F00F700C16151 /* AdpPushClient.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -58,6 +61,7 @@
 		95F9B91E211EF3E200C16151 /* react-native-chabok */ = {
 			isa = PBXGroup;
 			children = (
+				95F9B92E211F00F700C16151 /* AdpPushClient.framework */,
 				95F9B92C211EF48100C16151 /* AdpPushClient.h */,
 				95F9B92B211EF48100C16151 /* AdpPushClient.m */,
 			);
@@ -241,6 +245,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/react-native-chabok",
+				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -252,6 +260,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/react-native-chabok",
+				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
