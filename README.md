@@ -1,4 +1,9 @@
+
 # Chabok Push Client for react-native
+
+[![NpmVersion](https://img.shields.io/npm/v/react-native-chabok.svg)](https://www.npmjs.com/package/react-native-chabok)
+[![npm](https://img.shields.io/npm/dt/react-native-chabok.svg)](https://www.npmjs.com/package/react-native-chabok)
+
 React native wrapper for chabok library.
 This client library supports react-native to use chabok push library.
 A Wrapper around native library to use chabok functionalities in react-native environment.
@@ -6,15 +11,20 @@ A Wrapper around native library to use chabok functionalities in react-native en
 ## installation
 For java-part, library refrence and library initialization that includes seting up: `APP_ID`, `API_KEY`, `SDK_USERNAME`,  `SDK_PASSWORD` and platform specific parts regarding library reference for ios, and installatin details refer to [docs](https://doc.chabokpush.com/react-native-bridge/introducing.html).
 
-to install npm package:
+To install packages:
 
-```yarn
+```bash
 yarn add react-native-chabok
-react-native link react-native-chabok
 ```
 or
+
 ```bash
 npm install react-native-chabok --save
+```
+
+For linking `react-native-chabok`
+
+```bash
 react-native link react-native-chabok
 ```
 
@@ -32,17 +42,11 @@ android {
 ```
 
 ```groovy
-
-buildscript {
-    repositories {
-        jcenter()
-    }
-}
 dependencies {
     ...
     compile "com.google.android.gms:play-services-gcm:10.2.6"
-        compile 'me.leolin:ShortcutBadger:1.1.18@aar'
-        compile 'com.adpdigital.push:chabok-lib:+'
+    compile 'me.leolin:ShortcutBadger:1.1.18@aar'
+    compile 'com.adpdigital.push:chabok-lib:+'
     ...
 }
 ```
@@ -59,19 +63,14 @@ dependencies {
 
     <uses-permission android:name="YOUR_APPLICATION_PACKAGE_ID.permission.C2D_MESSAGE" />
 
-    <application
-        android:name=".YOUR_APPLICATION_CLASS_NAME"
-        android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
-        android:label="@string/app_name"
-        android:theme="@style/AppTheme">
+    <application>
         
-        <receiver android:name="PushMessageReceiver">
+        <receiver android:name="PushMessageReceiver"> <!-- optional -->
                     <intent-filter>
                         <category android:name="YOUR_APPLICATION_PACKAGE_ID"/>
                         <action android:name="com.adpdigital.push.client.MSGRECEIVE"/>
                     </intent-filter>
-                </receiver>
+        </receiver>
         
         <receiver
                 android:name="com.google.android.gms.gcm.GcmReceiver"
@@ -106,10 +105,10 @@ private AdpPushClient chabok = null;
                    chabok = AdpPushClient.init(
                        getApplicationContext(),
                        MainActivity.class,
-                       YOUR_APP_ID,
-                       YOUR_API_KEY,
-                       SDK_USERNAME,
-                       SDK_PASSWORD
+                       "YOUR_APP_ID",
+                       "YOUR_API_KEY",
+                       "SDK_USERNAME",
+                       "SDK_PASSWORD"
                        );
                }
     }
@@ -148,7 +147,7 @@ end
 3. Open the iOS project with .xcworkspace file in Xcode and also, open the `node_modules/react-native-chabok/` directory. Move the `ios/AdpPushClient.h` and `ios/AdpPushClient.m` files to your project.
 
 4. Import inside `AppDelegate`:
-```
+```objectivec
 #import <AdpPushClient/AdpPushClient.h>
 
 ...
@@ -176,11 +175,18 @@ didFailToRegisterForRemoteNotificationsWithError:error];
 In your `App.js`:
 
 ```javascript
+
+import { NativeEventEmitter, NativeModules } from 'react-native';
 import chabok from 'react-native-chabok';
 
 const USER = "react_native_user_ID";
 var channels = ["sport", "private/news"];
 this.chabok = new chabok.AdpPushClient();
+
+this.chabok.initializeApp('APP_Name', options , (response) => {
+  console.log('app initialized', response)
+});
+
 
 const chabokEmitter = new NativeEventEmitter(NativeModules.AdpPushClient);
 
@@ -213,7 +219,7 @@ this.chabok.publish(channel, msg)
     .catch(error => console.log(error));
 
 // unsubscribe
-this.chabok.unSubscribe(channel)
+this.chabok.unsubscribe(channel)
     .then(res => () => {
             console.log(res);
         })
