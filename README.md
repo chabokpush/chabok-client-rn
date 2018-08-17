@@ -179,6 +179,14 @@ In your `App.js`:
 import { NativeEventEmitter, NativeModules } from 'react-native';
 import chabok from 'react-native-chabok';
 
+const options = {
+  "appId": "APP_ID",
+  "apiKey": "API_KEY",
+  "username": "USERNAME",
+  "password": "PASSWORD",
+  "isDev": true
+};
+
 const USER = "react_native_user_ID";
 var channels = ["sport", "private/news"];
 this.chabok = new chabok.AdpPushClient();
