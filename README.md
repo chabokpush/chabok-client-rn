@@ -35,8 +35,8 @@ For the Android SDK, edit the `build.gradle` file in your `android/app` director
 
 ```groovy
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.0"
+    compileSdkVersion 26
+    buildToolsVersion "26.0.2"
     ...
 }
 ```
@@ -64,13 +64,6 @@ dependencies {
     <uses-permission android:name="YOUR_APPLICATION_PACKAGE_ID.permission.C2D_MESSAGE" />
 
     <application>
-        
-        <receiver android:name="PushMessageReceiver"> <!-- optional -->
-                    <intent-filter>
-                        <category android:name="YOUR_APPLICATION_PACKAGE_ID"/>
-                        <action android:name="com.adpdigital.push.client.MSGRECEIVE"/>
-                    </intent-filter>
-        </receiver>
         
         <receiver
                 android:name="com.google.android.gms.gcm.GcmReceiver"
