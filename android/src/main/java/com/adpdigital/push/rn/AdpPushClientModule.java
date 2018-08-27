@@ -11,6 +11,7 @@ import android.util.Log;
 import com.adpdigital.push.AdpPushClient;
 import com.adpdigital.push.Callback;
 import com.adpdigital.push.ConnectionStatus;
+import com.adpdigital.push.PushMessage;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
@@ -65,7 +66,6 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
 
         chabok = AdpPushClient.get();
         if(chabok != null) {
-            Log.d(TAG, "AdpPushClientModule: initialized");
             attachChabokClient();
         }
     }
@@ -74,7 +74,7 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
     public void initializeApp(String appName, ReadableMap options, com.facebook.react.bridge.Callback callback) {
 
         activityClass = getMainActivityClass();
-        if (chabok == null && activityClass != null) {
+        if (chabok == null) {
             chabok = AdpPushClient.init(
                     getReactApplicationContext(),
                     activityClass,
@@ -87,12 +87,16 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
 
             chabok.setDevelopment(options.getBoolean("isDev"));
             chabok.enableDeliveryTopic();
-
-            //chabok.addListener(getReactApplicationContext());
             attachChabokClient();
+        }
 
+        if (activityClass != null) {
             WritableMap response = Arguments.createMap();
             response.putString("result", "success");
+            callback.invoke(response);
+        } else { // TODO improve sending error or mechanism
+            WritableMap response = Arguments.createMap();
+            response.putString("result", "failed");
             callback.invoke(response);
         }
     }
@@ -101,32 +105,42 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
         updateConnectionStatus(status);
     }
 
+    public void onEvent(final PushMessage msg) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                WritableMap response = Arguments.createMap();
+                response.putString("alertText", msg.getAlertText());
+                response.putString("alertTitle", msg.getAlertTitle());
+                response.putString("body", msg.getBody());
+                response.putString("intentType", msg.getIntentType());
+                response.putString("senderId", msg.getSenderId());
+                response.putString("sentId", msg.getSentId());
+                response.putString("id", msg.getId());
+                response.putString("sound", msg.getSound());
+                response.putString("channel", msg.getChannel());
+
+                response.putDouble("receivedAt", msg.getReceivedAt());
+                response.putDouble("createdAt", msg.getCreatedAt());
+                response.putDouble("expireAt", msg.getExpireAt());
+
+                // TODO jsonObject to hash!
+                //response.putMap("data", msg.getData());
+                //response.putMap("notification", msg.getNotification());
+
+                sendEvent("ChabokMessageReceived", response);
+            }
+        });
+    }
+
     private void attachChabokClient() {
-        Class mainActivityClass = getMainActivityClass();
-        if(mainActivityClass != null) {
-            //chabok.setPushListener(mainActivityClass);
-        }
+        chabok.setPushListener(this);
         fetchAndUpdateConnectionStatus();
     }
 
     private void detachClient() {
-        //chabok.removePushListener(getMainActivityClass());
+        chabok.removePushListener(this);
         fetchAndUpdateConnectionStatus();
-    }
-
-    private void fetchAndUpdateConnectionStatus() {
-        chabok.getStatus(new Callback<ConnectionStatus>() {
-            @Override
-            public void onSuccess(final ConnectionStatus connectionStatus) {
-                updateConnectionStatus(connectionStatus);
-                Log.d(TAG, "ConnectionStatus onSuccess: " + connectionStatus.toString());
-            }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-                Log.i(TAG, "ConnectionStatus errrror ");
-            }
-        });
     }
 
     private void updateConnectionStatus(final ConnectionStatus connectionStatus) {
@@ -134,12 +148,27 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
             @Override
             public void run() {
                 String statusValue = connectionStatus.toString();
-                sendEvent("status",statusValue);
+                sendEvent("connectionStatus",statusValue);
             }
         });
     }
 
-    private Class getMainActivityClass() {
+
+    private void fetchAndUpdateConnectionStatus() {
+        chabok.getStatus(new Callback<ConnectionStatus>() {
+            @Override
+            public void onSuccess(final ConnectionStatus connectionStatus) {
+                updateConnectionStatus(connectionStatus);
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+                Log.i(TAG, "Chabok ConnectionStatus error");
+            }
+        });
+    }
+
+        private Class getMainActivityClass() {
         if(activityClass != null) {
             return activityClass;
         } else {
@@ -209,7 +238,6 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
         WritableMap map = Arguments.createMap();
 
         map.putString("id", chabok.getAppId());
-        Log.d(TAG, "getAppId: id: " + map.getString("id"));
         promise.resolve(map);
     }
 
@@ -217,24 +245,19 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
     public void getClientVersion(Promise promise) {
         WritableMap map = Arguments.createMap();
         map.putString("version", chabok.getClientVersion());
-        Log.d(TAG, "getClientVersion: version: " + map.getString("version"));
         promise.resolve(map);
     }
 
     @ReactMethod
     public void publish(String channel, String text, final Promise promise) {
-
-        Log.d(TAG, "publish: channel: " + channel + " ,text: " + text);
         chabok.publish(channel, text, new Callback() {
             @Override
             public void onSuccess(Object o) {
-                Log.d(TAG, "onSuccess: called");
                 promise.resolve(o);
             }
 
             @Override
             public void onFailure(Throwable throwable) {
-                Log.d(TAG, "onFailure: called");
                 promise.reject(throwable);
             }
         });
@@ -245,13 +268,11 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
         chabok.addTag(tag, new Callback() {
             @Override
             public void onSuccess(Object o) {
-                Log.d(TAG, "onSuccess: called");
                 promise.resolve(true);
             }
 
             @Override
             public void onFailure(Throwable throwable) {
-                Log.d(TAG, "onFailure: called");
                 promise.reject(throwable);
             }
         });
@@ -262,48 +283,44 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
         chabok.removeTag(tag, new Callback() {
             @Override
             public void onSuccess(Object o) {
-                Log.d(TAG, "onSuccess: called");
                 promise.resolve(true);
             }
 
             @Override
             public void onFailure(Throwable throwable) {
-                Log.d(TAG, "onFailure: called");
                 promise.reject(throwable);
             }
         });
     }
 
+    @ReactMethod
     public void subscribe(String channel, final Promise promise) {
         if(!TextUtils.isEmpty(channel)) {
             chabok.subscribe(channel, true, new Callback() {
                 @Override
                 public void onSuccess(Object value) {
-                    Log.d(TAG, "subscribe onSuccess: called");
                     promise.resolve(true);
                 }
 
                 @Override
                 public void onFailure(Throwable throwable) {
-                    Log.d(TAG, "subscribe onFailure: called");
                     promise.reject(throwable);
                 }
             });
         }
     }
 
-    public void unSubscribe(String channel, final Promise promise) {
+    @ReactMethod
+    public void unsubscribe(String channel, final Promise promise) {
         if(!TextUtils.isEmpty(channel)) {
             chabok.unsubscribe(channel, new Callback() {
                 @Override
                 public void onSuccess(Object value) {
-                    Log.d(TAG, "unsubscribe onSuccess: called");
                     promise.resolve(true);
                 }
 
                 @Override
                 public void onFailure(Throwable throwable) {
-                    Log.d(TAG, "unsubscribe onFailure: called");
                     promise.reject(throwable);
                 }
             });
@@ -385,7 +402,7 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
         @Override
         public void onReceive(Context context, Intent intent) {
             String status = intent.getStringExtra("status");
-            sendEvent("status", status);
+            sendEvent("connectionStatus", status);
         }
     }
 }
