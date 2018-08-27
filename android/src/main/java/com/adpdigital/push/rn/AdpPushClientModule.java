@@ -119,10 +119,12 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
                 response.putString("id", msg.getId());
                 response.putString("sound", msg.getSound());
                 response.putString("channel", msg.getChannel());
-                response.putMap("data", toWritableMap(msg.getData()));
                 response.putDouble("receivedAt", msg.getReceivedAt());
                 response.putDouble("createdAt", msg.getCreatedAt());
                 response.putDouble("expireAt", msg.getExpireAt());
+                if(msg.getData()) {
+                    response.putMap("data", toWritableMap(msg.getData()));
+                }
 
                 // TODO jsonObject to hash!
                 //response.putMap("data", msg.getData());
