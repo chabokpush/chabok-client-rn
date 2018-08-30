@@ -146,7 +146,7 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
                 } else if (json.get(key) instanceof String) {
                     response.putString(key, (String) json.get(key));
                 } else if (json.get(key) instanceof JSONObject) {
-                    toWritableMap((JSONObject) json.get(key));
+                    response.putMap(key, toWritableMap((JSONObject) json.get(key)));
                 } else if (json.get(key) instanceof Double) {
                     response.putDouble(key, (Double) json.get(key));
                 } else if (json.get(key) instanceof Boolean) {
