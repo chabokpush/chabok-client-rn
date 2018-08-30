@@ -65,7 +65,7 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
         localBroadcastManager.registerReceiver(mLocalBroadcastReceiver, new IntentFilter(Constants.ACTION_CONNECTION_STATUS));
 
         chabok = AdpPushClient.get();
-        if(chabok != null) {
+        if (chabok != null) {
             attachChabokClient();
         }
     }
@@ -119,10 +119,12 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
                 response.putString("id", msg.getId());
                 response.putString("sound", msg.getSound());
                 response.putString("channel", msg.getChannel());
-
                 response.putDouble("receivedAt", msg.getReceivedAt());
                 response.putDouble("createdAt", msg.getCreatedAt());
                 response.putDouble("expireAt", msg.getExpireAt());
+                if(msg.getData()) {
+                    response.putMap("data", toWritableMap(msg.getData()));
+                }
 
                 // TODO jsonObject to hash!
                 //response.putMap("data", msg.getData());
@@ -131,6 +133,30 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
                 sendEvent("ChabokMessageReceived", response);
             }
         });
+    }
+
+    WritableMap toWritableMap(JSONObject json) {
+        WritableMap response = Arguments.createMap();
+        Iterator iter = json.keys();
+        while (iter.hasNext()) {
+            String key = iter.next();
+            try {
+                if (json.get(key) instanceof Integer) {
+                    response.putInt(key, (Integer) json.get(key));
+                } else if (json.get(key) instanceof String) {
+                    response.putString(key, (String) json.get(key));
+                } else if (json.get(key) instanceof JSONObject) {
+                    toWritableMap((JSONObject) json.get(key));
+                } else if (json.get(key) instanceof Double) {
+                    response.putDouble(key, (Double) json.get(key));
+                } else if (json.get(key) instanceof Boolean) {
+                    response.putBoolean(key, (Boolean) json.get(key));
+                }
+            } catch (JSONException e) {
+                // Something went wrong!
+            }
+        }
+        return response;
     }
 
     private void attachChabokClient() {
@@ -148,7 +174,7 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
             @Override
             public void run() {
                 String statusValue = connectionStatus.toString();
-                sendEvent("connectionStatus",statusValue);
+                sendEvent("connectionStatus", statusValue);
             }
         });
     }
@@ -168,8 +194,8 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
         });
     }
 
-        private Class getMainActivityClass() {
-        if(activityClass != null) {
+    private Class getMainActivityClass() {
+        if (activityClass != null) {
             return activityClass;
         } else {
             String packageName = mReactContext.getPackageName();
@@ -295,7 +321,7 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
 
     @ReactMethod
     public void subscribe(String channel, final Promise promise) {
-        if(!TextUtils.isEmpty(channel)) {
+        if (!TextUtils.isEmpty(channel)) {
             chabok.subscribe(channel, true, new Callback() {
                 @Override
                 public void onSuccess(Object value) {
@@ -312,7 +338,7 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
 
     @ReactMethod
     public void unsubscribe(String channel, final Promise promise) {
-        if(!TextUtils.isEmpty(channel)) {
+        if (!TextUtils.isEmpty(channel)) {
             chabok.unsubscribe(channel, new Callback() {
                 @Override
                 public void onSuccess(Object value) {
@@ -329,10 +355,10 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
 
     @Override
     public void onHostResume() {
-        if(chabok != null) {
+        if (chabok != null) {
             attachChabokClient();
         }
-        if(mLocalBroadcastReceiver != null) {
+        if (mLocalBroadcastReceiver != null) {
             localBroadcastManager.registerReceiver(mLocalBroadcastReceiver, new IntentFilter(Constants.ACTION_CONNECTION_STATUS));
         }
         mAppState = APP_STATE_ACTIVE;
@@ -341,10 +367,10 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
 
     @Override
     public void onHostPause() {
-        if(chabok != null) {
+        if (chabok != null) {
             detachClient();
         }
-        if(mLocalBroadcastReceiver != null) {
+        if (mLocalBroadcastReceiver != null) {
             localBroadcastManager.unregisterReceiver(mLocalBroadcastReceiver);
         }
         mAppState = APP_STATE_BACKGROUND;
@@ -364,7 +390,7 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
     }
 
     private void sendEvent(String eventName, String event) {
-        if(getReactApplicationContext().hasActiveCatalystInstance()) {
+        if (getReactApplicationContext().hasActiveCatalystInstance()) {
             getReactApplicationContext().getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
                     .emit(eventName, event);
         }
