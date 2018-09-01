@@ -98,7 +98,7 @@ private AdpPushClient chabok = null;
                    chabok = AdpPushClient.init(
                        getApplicationContext(),
                        MainActivity.class,
-                       "YOUR_APP_ID",
+                       "YOUR_APP_ID/SENDER_ID",
                        "YOUR_API_KEY",
                        "SDK_USERNAME",
                        "SDK_PASSWORD"
