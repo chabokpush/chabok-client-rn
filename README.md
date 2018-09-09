@@ -1,5 +1,6 @@
+![Logo](https://github.com/chabokpush/chabok-assets/blob/master/sdk-logo/RN-Bridge.svg)
 
-# Chabok Push Client for react-native
+# Chabok Push Client for React Native (Bridge)
 
 [![NpmVersion](https://img.shields.io/npm/v/react-native-chabok.svg)](https://www.npmjs.com/package/react-native-chabok)
 [![npm](https://img.shields.io/npm/dt/react-native-chabok.svg)](https://www.npmjs.com/package/react-native-chabok)
