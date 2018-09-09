@@ -1,5 +1,6 @@
 
-# Chabok Push Client for react-native
+# Chabok Push Client for React Native (Bridge)
+![Logo](https://github.com/chabokpush/chabok-assets/blob/master/sdk-logo/RN-Bridge.svg)
 
 [![NpmVersion](https://img.shields.io/npm/v/react-native-chabok.svg)](https://www.npmjs.com/package/react-native-chabok)
 [![npm](https://img.shields.io/npm/dt/react-native-chabok.svg)](https://www.npmjs.com/package/react-native-chabok)
@@ -98,7 +99,7 @@ private AdpPushClient chabok = null;
                    chabok = AdpPushClient.init(
                        getApplicationContext(),
                        MainActivity.class,
-                       "YOUR_APP_ID/SENDER_ID",
+                       "YOUR_APP_ID",
                        "YOUR_API_KEY",
                        "SDK_USERNAME",
                        "SDK_PASSWORD"
