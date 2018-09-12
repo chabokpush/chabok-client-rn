@@ -25,7 +25,11 @@ import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import static com.facebook.react.bridge.UiThreadUtil.runOnUiThread;
@@ -122,7 +126,7 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
                 response.putDouble("receivedAt", msg.getReceivedAt());
                 response.putDouble("createdAt", msg.getCreatedAt());
                 response.putDouble("expireAt", msg.getExpireAt());
-                if(msg.getData()) {
+                if(msg.getData() != null) {
                     response.putMap("data", toWritableMap(msg.getData()));
                 }
 
@@ -135,11 +139,11 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
         });
     }
 
-    WritableMap toWritableMap(JSONObject json) {
+    private WritableMap toWritableMap(JSONObject json) {
         WritableMap response = Arguments.createMap();
         Iterator iter = json.keys();
         while (iter.hasNext()) {
-            String key = iter.next();
+            String key = (String) iter.next();
             try {
                 if (json.get(key) instanceof Integer) {
                     response.putInt(key, (Integer) json.get(key));
