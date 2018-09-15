@@ -402,6 +402,10 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
     }
 
     @ReactMethod
+    public void resetBadge() {
+        chabok.resetBadge();
+    }
+    @ReactMethod
     public void subscribe(String channel, final Promise promise) {
         if (!TextUtils.isEmpty(channel)) {
             chabok.subscribe(channel, true, new Callback() {
