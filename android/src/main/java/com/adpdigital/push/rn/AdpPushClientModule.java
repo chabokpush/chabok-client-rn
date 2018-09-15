@@ -88,7 +88,6 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
                     options.getString("password")
             );
 
-
             chabok.setDevelopment(options.getBoolean("isDev"));
             chabok.enableDeliveryTopic();
             attachChabokClient();
@@ -102,6 +101,35 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
             WritableMap response = Arguments.createMap();
             response.putString("result", "failed");
             callback.invoke(response);
+        }
+    }
+
+    @ReactMethod
+    public void init(String appId, String apiKey, String username, String password, Promise promise) {
+
+        activityClass = getMainActivityClass();
+        if (chabok == null) {
+            chabok = AdpPushClient.init(
+                    getReactApplicationContext(),
+                    activityClass,
+                    appId,
+                    apiKey,
+                    username,
+                    password
+            );
+
+            chabok.addListener(getReactApplicationContext());
+            attachChabokClient();
+        }
+
+        if (activityClass != null) {
+            WritableMap response = Arguments.createMap();
+            response.putString("result", "success");
+            promise.resolve(response);
+        } else { // TODO improve sending error or mechanism
+            WritableMap response = Arguments.createMap();
+            response.putString("result", "failed");
+            promise.resolve(response);
         }
     }
 
