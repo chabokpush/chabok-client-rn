@@ -161,6 +161,16 @@ RCT_EXPORT_METHOD(addTag:(NSString *) tagName resolver:(RCTPromiseResolveBlock)r
                                      reject(errorCode,error.domain,error);
                                    }];
 }
+RCT_EXPORT_METHOD(addTags:(NSArray *) tagsName resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
+  [PushClientManager.defaultManager addTags:tagsName
+                                   success:^(NSInteger count) {
+                                     resolve(@[@{@"count":@(count)}]);
+                                   } failure:^(NSError *error) {
+                                     NSString *errorCode = [NSString stringWithFormat:@"%zd",error.code];
+                                     reject(errorCode,error.domain,error);
+                                   }];
+}
 RCT_EXPORT_METHOD(removeTag:(NSString *) tagName resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
   [PushClientManager.defaultManager removeTag:tagName
@@ -171,8 +181,19 @@ RCT_EXPORT_METHOD(removeTag:(NSString *) tagName resolver:(RCTPromiseResolveBloc
                                      reject(errorCode,error.domain,error);
                                    }];
 }
+RCT_EXPORT_METHOD(removeTags:(NSArray *) tagsName resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
+  [PushClientManager.defaultManager removeTags:tagsName
+                                      success:^(NSInteger count) {
+                                        resolve(@[@{@"count":@(count)}]);
+                                      } failure:^(NSError *error) {
+                                        NSString *errorCode = [NSString stringWithFormat:@"%zd",error.code];
+                                        reject(errorCode,error.domain,error);
+                                      }];
+}
 
 #pragma mark - publish
+
 RCT_EXPORT_METHOD(publish:(NSString *) channel text:(NSString *) text resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
   BOOL publishState = [PushClientManager.defaultManager publish:channel withText:text];
