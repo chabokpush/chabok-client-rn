@@ -292,8 +292,9 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
     }
 
     @ReactMethod
-    public void getAppId(Promise promise) {
-        WritableMap map = Arguments.createMap();
+    public void unRegister() {
+        chabok.unregister();
+    }
 
         map.putString("id", chabok.getAppId());
         promise.resolve(map);
