@@ -1,6 +1,7 @@
 buildscript {
     repositories {
         jcenter()
+        google()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.3.3'
@@ -17,17 +18,18 @@ allprojects {
             // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
             url "$rootDir/../node_modules/react-native/android"
         }
+        google()
     }
 }
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion 26
     buildToolsVersion "26.0.2"
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 23
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
 
@@ -48,10 +50,10 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile "com.facebook.react:react-native:+"  // From node_modules
-    compile 'com.android.support:appcompat-v7:26.+'
+    compile 'com.android.support:appcompat-v7:26.0.2'
     testCompile 'junit:junit:4.12'
     compile 'com.google.android.gms:play-services-gcm:10.2.6'
 
-    compile 'me.leolin:ShortcutBadger:1.1.18@aar'
-    compile 'com.adpdigital.push:chabok-lib:2.11.3'
+    compile 'me.leolin:ShortcutBadger:1.1.22@aar'
+    compile 'com.adpdigital.push:chabok-lib:2.13.1'
 }
