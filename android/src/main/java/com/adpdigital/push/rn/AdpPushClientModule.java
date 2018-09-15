@@ -355,14 +355,23 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
 
     @ReactMethod
     public void addTag(String tag, final Promise promise) {
-        chabok.addTag(tag, new Callback() {
+        String[] tagsName = new String[1];
+        tagsName[0] = tag;
+        addTags(tagsName,promise);
+    }
+
+    @ReactMethod
+    public void addTags(String[] tagsName, final Promise promise) {
+        chabok.addTag(tagsName, new Callback() {
             @Override
             public void onSuccess(Object o) {
+                Log.d(TAG, "The addTags onSuccess: called");
                 promise.resolve(true);
             }
 
             @Override
             public void onFailure(Throwable throwable) {
+                Log.d(TAG, "The addTag onFailure: called");
                 promise.reject(throwable);
             }
         });
