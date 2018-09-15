@@ -296,8 +296,14 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
         chabok.unregister();
     }
 
-        map.putString("id", chabok.getAppId());
-        promise.resolve(map);
+    @ReactMethod
+    public void getInstallationId(Promise promise){
+        String installationId = chabok.getInstallationId();
+        if (installationId == null){
+            promise.reject("500","The installationId is null, You didn't register yet!");
+        } else {
+            promise.resolve(installationId);
+    }
     }
 
     @ReactMethod
