@@ -20,6 +20,35 @@ RCT_EXPORT_MODULE()
 
 #pragma mark - Initilaizer
 
+RCT_EXPORT_METHOD(init:(NSString *) appId
+                  apiKey:(NSString *) apiKey
+                  username:(NSString *) username
+                  password:(NSString *) password
+                  promise:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
+  self.appId = appId;
+  [PushClientManager.defaultManager addDelegate:self];
+  [PushClientManager.defaultManager application:UIApplication.sharedApplication
+                  didFinishLaunchingWithOptions:nil];
+  
+  BOOL state = [PushClientManager.defaultManager registerApplication:appId
+                                                              apiKey:apiKey
+                                                            userName:username
+                                                            password:password];
+  if (state) {
+    RCTLogInfo(@"Initilized sucessfully");
+    resolve(@{@"result":@"Initilized sucessfully"});
+  } else {
+    RCTLogInfo(@"Could not init chabok parameters");
+    NSError *error = [[NSError alloc] initWithDomain:NSLocalizedDescriptionKey
+                                                code:400
+                                            userInfo:@{
+                                                       @"result":@"Could not init chabok parameters"
+                                                       }];
+    reject(@"400",@"Could not init chabok parameters",error);
+  }
+}
+
 RCT_EXPORT_METHOD(initializeApp:(NSString *) appName options:(NSDictionary *) options cbk:(RCTResponseSenderBlock) cbk) {
 
   if(options == nil || [options isEqual:[NSNull null]]){
@@ -39,21 +68,15 @@ RCT_EXPORT_METHOD(initializeApp:(NSString *) appName options:(NSDictionary *) op
     NSString *password = [options valueForKey:@"password"];
     
     NSArray *appIds = [appId componentsSeparatedByString:@"/"];
-    
-    [PushClientManager.defaultManager application:UIApplication.sharedApplication
-                    didFinishLaunchingWithOptions:nil];
-    
-    BOOL state = [PushClientManager.defaultManager registerApplication:appIds.firstObject
-                                                   apiKey:apiKey
-                                                 userName:username
-                                                 password:password];
-    if (state) {
-      RCTLogInfo(@"Initilized sucessfully");
-      cbk(@[@{@"result":@"Initilized sucessfully"}]);
-    } else {
-      RCTLogInfo(@"Could not init chabok parameters");
-      cbk(@[@{@"result":@"Could not init chabok parameters"}]);
-    }
+    [self init:appIds.firstObject
+             apiKey:apiKey
+           username:username
+           password:password
+       promise:^(id result) {
+         cbk(result);
+       } rejecter:^(NSString *code, NSString *message, NSError *error) {
+         cbk(@[@{@"error":message}]);
+       }];
   }
 }
 
