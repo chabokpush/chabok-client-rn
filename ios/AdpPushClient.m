@@ -129,14 +129,24 @@ RCT_EXPORT_METHOD(register:(NSString *)userId channels:(NSArray *) channels) {
   }
 }
 
-RCT_EXPORT_METHOD(getAppId:(RCTPromiseResolveBlock)resolve
-                            rejecter:(RCTPromiseRejectBlock)reject) {
-  resolve(@{@"id":@"adp-nms-push"});
+RCT_EXPORT_METHOD(unRegister) {
+  [PushClientManager.defaultManager unregisterUser];
 }
 
-RCT_EXPORT_METHOD(getClientVersion:(RCTPromiseResolveBlock)resolve
-                  rejecter:(RCTPromiseRejectBlock)reject) {
-  resolve(@{@"version":@"1.0.1"});
+RCT_EXPORT_METHOD(getInstallationId:(RCTResponseSenderBlock)callback) {
+  NSString *installationId = [PushClientManager.defaultManager getInstallationId];
+  callback(@[installationId]);
+}
+
+RCT_EXPORT_METHOD(getUserId:(RCTResponseSenderBlock)callback) {
+  NSString *userId = [PushClientManager.defaultManager userId];
+  callback(@[userId]);
+}
+
+#pragma mark - dev
+
+RCT_EXPORT_METHOD(setDevelopment:(BOOL) devMode) {
+  [PushClientManager setDevelopment:devMode];
 }
 
 #pragma mark - tags
