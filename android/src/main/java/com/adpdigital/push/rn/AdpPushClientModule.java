@@ -307,10 +307,18 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
     }
 
     @ReactMethod
-    public void getClientVersion(Promise promise) {
-        WritableMap map = Arguments.createMap();
-        map.putString("version", chabok.getClientVersion());
-        promise.resolve(map);
+    public void getUserId(Promise promise){
+        String userId = chabok.getUserId();
+        if (userId == null){
+            promise.reject("500","The userId is null, You didn't register yet!");
+        } else {
+            promise.resolve(userId);
+        }
+    }
+
+    @ReactMethod
+    public void setDevelopment(Boolean devMode){
+        chabok.setDevelopment(devMode);
     }
 
     @ReactMethod
