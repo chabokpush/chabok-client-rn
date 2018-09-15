@@ -12,6 +12,8 @@
 
 @interface AdpPushClient()<PushClientManagerDelegate>
 
+@property (nonatomic, strong) NSString *appId;
+
 @end
 
 @implementation AdpPushClient
@@ -260,6 +262,10 @@ RCT_EXPORT_METHOD(track:(NSString *) trackName data:(NSDictionary *) data) {
   }
 
   [self sendEventWithName:@"connectionStatus" body:connectionState];
+}
+
+- (void)invalidate {
+  self.appId = nil;
 }
 
 @end
