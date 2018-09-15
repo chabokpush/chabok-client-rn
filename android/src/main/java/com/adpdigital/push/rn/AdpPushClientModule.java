@@ -337,6 +337,23 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
     }
 
     @ReactMethod
+    public void publish(String userId, String channel, String text, final Promise promise) {
+        chabok.publish(userId, channel, text, new Callback() {
+            @Override
+            public void onSuccess(Object o) {
+                Log.d(TAG, "The publish method onSuccess invoked.");
+                promise.resolve(o);
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+                Log.d(TAG, "The publish method onFailure invoked.");
+                promise.reject(throwable);
+            }
+        });
+    }
+
+    @ReactMethod
     public void addTag(String tag, final Promise promise) {
         chabok.addTag(tag, new Callback() {
             @Override
