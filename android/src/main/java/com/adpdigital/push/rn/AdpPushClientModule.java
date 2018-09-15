@@ -379,14 +379,23 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
 
     @ReactMethod
     public void removeTag(String tag, final Promise promise) {
-        chabok.removeTag(tag, new Callback() {
+        String[] tagsName = new String[1];
+        tagsName[0] = tag;
+        removeTags(tagsName,promise);
+    }
+
+    @ReactMethod
+    public void removeTags(String[] tagsName, final Promise promise) {
+        chabok.removeTag(tagsName, new Callback() {
             @Override
             public void onSuccess(Object o) {
+                Log.d(TAG, "The removeTag onSuccess: called");
                 promise.resolve(true);
             }
 
             @Override
             public void onFailure(Throwable throwable) {
+                Log.d(TAG, "The removeTag onFailure: called");
                 promise.reject(throwable);
             }
         });
