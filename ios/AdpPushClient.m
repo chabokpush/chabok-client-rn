@@ -200,19 +200,19 @@ RCT_EXPORT_METHOD(publish:(NSString *) channel text:(NSString *) text resolver:(
   resolve(@[@{@"published":@(publishState)}]);
 }
 
-//RCT_EXPORT_METHOD(publish:(NSString *) userId channel:(NSString *) channel text:(NSString *) text resolver:(RCTPromiseResolveBlock)resolve
-//                  rejecter:(RCTPromiseRejectBlock)reject) {
-//  BOOL publishState = [PushClientManager.defaultManager publish:userId toChannel:channel withText:text];
-//  resolve(@[@{@"published":@(publishState)}]);
-//}
-//
-//RCT_EXPORT_METHOD(publish:(NSDictionary *) message resolver:(RCTPromiseResolveBlock)resolve
-//                  rejecter:(RCTPromiseRejectBlock)reject) {
-//  PushClientMessage *chabokMessage = [[PushClientMessage alloc] initWithJson:message
-//                                                               channel:[message valueForKey:@"channel"]];
-//  BOOL publishState = [PushClientManager.defaultManager publish:chabokMessage];
-//  resolve(@[@{@"published":@(publishState)}]);
-//}
+RCT_EXPORT_METHOD(publish:(NSString *) userId channel:(NSString *) channel text:(NSString *) text resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
+  BOOL publishState = [PushClientManager.defaultManager publish:userId toChannel:channel withText:text];
+  resolve(@[@{@"published":@(publishState)}]);
+}
+
+RCT_EXPORT_METHOD(publish:(NSDictionary *) message resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
+  PushClientMessage *chabokMessage = [[PushClientMessage alloc] initWithJson:message
+                                                               channel:[message valueForKey:@"channel"]];
+  BOOL publishState = [PushClientManager.defaultManager publish:chabokMessage];
+  resolve(@[@{@"published":@(publishState)}]);
+}
 
 #pragma mark - subscribe
 RCT_EXPORT_METHOD(subscribe:(NSString *) channel) {
