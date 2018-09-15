@@ -224,13 +224,25 @@ RCT_EXPORT_METHOD(unsubscribe:(NSString *) channel) {
   [PushClientManager.defaultManager unsubscribe:channel];
 }
 
+#pragma mark - badge
+RCT_EXPORT_METHOD(resetBadge) {
+  [PushClientManager resetBadge];
+}
+
+#pragma mark - track
+RCT_EXPORT_METHOD(track:(NSString *) trackName data:(NSDictionary *) data) {
+  [PushClientManager.defaultManager track:trackName data:data];
+}
+
 #pragma mark - chabok delegate methods
 - (NSArray<NSString *> *)supportedEvents{
   return @[@"connectionStatus",@"ChabokMessageReceived"];
 }
 
 -(void) pushClientManagerDidReceivedMessage:(PushClientMessage *)message{
-  [self sendEventWithName:@"ChabokMessageReceived" body:[message toDict]];
+  if (self.bridge) {
+    [self sendEventWithName:@"ChabokMessageReceived" body:[message toDict]];
+  }
 }
 
 -(void) pushClientManagerDidChangedServerConnectionState {
