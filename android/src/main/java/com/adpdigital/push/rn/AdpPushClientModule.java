@@ -20,11 +20,14 @@ import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
+import com.facebook.react.bridge.ReadableType;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -303,7 +306,7 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
             promise.reject("500","The installationId is null, You didn't register yet!");
         } else {
             promise.resolve(installationId);
-    }
+        }
     }
 
     @ReactMethod
@@ -405,6 +408,18 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
     public void resetBadge() {
         chabok.resetBadge();
     }
+
+    @ReactMethod
+    public void track(String trackName,ReadableMap data) {
+        try {
+            if (data != null){
+                chabok.track(trackName,toJsonObject(data));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
     @ReactMethod
     public void subscribe(String channel, final Promise promise) {
         if (!TextUtils.isEmpty(channel)) {
@@ -516,5 +531,57 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
             String status = intent.getStringExtra("status");
             sendEvent("connectionStatus", status);
         }
+    }
+
+    private JSONObject toJsonObject(ReadableMap readableMap) throws JSONException {
+        JSONObject object = new JSONObject();
+        ReadableMapKeySetIterator iter = readableMap.keySetIterator();
+        while(iter.hasNextKey()) {
+            String key = iter.nextKey();
+            ReadableType type = readableMap.getType(key);
+            switch(type) {
+                case Boolean:
+                    object.put(key, readableMap.getBoolean(key));
+                    break;
+                case Number:
+                    object.put(key, readableMap.getDouble(key));
+                    break;
+                case String:
+                    object.put(key, readableMap.getString(key));
+                    break;
+                case Map:
+                    object.put(key, toJsonObject(readableMap.getMap(key)));
+                    break;
+                case Array:
+                    object.put(key, toJsonArray(readableMap.getArray(key)));
+                    break;
+            }
+        }
+        return object;
+    }
+
+    private JSONArray toJsonArray(ReadableArray readableArray) throws JSONException {
+        JSONArray array = new JSONArray();
+        for (int idx = 0; idx < readableArray.size(); idx++) {
+            ReadableType type = readableArray.getType(idx);
+            switch(type) {
+                case Boolean:
+                    array.put(readableArray.getBoolean(idx));
+                    break;
+                case Number:
+                    array.put(readableArray.getDouble(idx));
+                    break;
+                case String:
+                    array.put(readableArray.getString(idx));
+                    break;
+                case Map:
+                    array.put(toJsonObject(readableArray.getMap(idx)));
+                    break;
+                case Array:
+                    array.put(toJsonArray(readableArray.getArray(idx)));
+                    break;
+            }
+        }
+        return array;
     }
 }
