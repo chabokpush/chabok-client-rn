@@ -133,17 +133,17 @@ RCT_EXPORT_METHOD(register:(NSString *)userId channels:(NSArray *) channels) {
 }
 
 RCT_EXPORT_METHOD(unregister) {
-  [PushClientManager.defaultManager unregisterUser];
+    [PushClientManager.defaultManager unregisterUser];
 }
 
-RCT_EXPORT_METHOD(getInstallationId:(RCTResponseSenderBlock)callback) {
-  NSString *installationId = [PushClientManager.defaultManager getInstallationId];
-  callback(@[installationId]);
+RCT_EXPORT_METHOD(getInstallationId:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    NSString *installationId = [PushClientManager.defaultManager getInstallationId];
+    resolve(installationId);
 }
 
-RCT_EXPORT_METHOD(getUserId:(RCTResponseSenderBlock)callback) {
-  NSString *userId = [PushClientManager.defaultManager userId];
-  callback(@[userId]);
+RCT_EXPORT_METHOD(getUserId:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
+    NSString *userId = [PushClientManager.defaultManager userId];
+    resolve(userId);
 }
 
 #pragma mark - dev
@@ -156,42 +156,42 @@ RCT_EXPORT_METHOD(setDevelopment:(BOOL) devMode) {
 
 RCT_EXPORT_METHOD(addTag:(NSString *) tagName resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
-  [PushClientManager.defaultManager addTag:tagName
-                                   success:^(NSInteger count) {
-                                     resolve(@[@{@"count":@(count)}]);
-                                   } failure:^(NSError *error) {
-                                     NSString *errorCode = [NSString stringWithFormat:@"%zd",error.code];
-                                     reject(errorCode,error.domain,error);
+    [PushClientManager.defaultManager addTag:tagName
+                                     success:^(NSInteger count) {
+                                         resolve(@{@"count":@(count)});
+                                     } failure:^(NSError *error) {
+                                         NSString *errorCode = [NSString stringWithFormat:@"%zd",error.code];
+                                         reject(errorCode,error.domain,error);
                                    }];
 }
 RCT_EXPORT_METHOD(addTags:(NSArray *) tagsName resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
-  [PushClientManager.defaultManager addTags:tagsName
-                                   success:^(NSInteger count) {
-                                     resolve(@[@{@"count":@(count)}]);
-                                   } failure:^(NSError *error) {
-                                     NSString *errorCode = [NSString stringWithFormat:@"%zd",error.code];
-                                     reject(errorCode,error.domain,error);
+    [PushClientManager.defaultManager addTags:tagsName
+                                      success:^(NSInteger count) {
+                                          resolve(@{@"count":@(count)});
+                                      } failure:^(NSError *error) {
+                                          NSString *errorCode = [NSString stringWithFormat:@"%zd",error.code];
+                                          reject(errorCode,error.domain,error);
                                    }];
 }
 RCT_EXPORT_METHOD(removeTag:(NSString *) tagName resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
-  [PushClientManager.defaultManager removeTag:tagName
-                                   success:^(NSInteger count) {
-                                     resolve(@[@{@"count":@(count)}]);
-                                   } failure:^(NSError *error) {
-                                     NSString *errorCode = [NSString stringWithFormat:@"%zd",error.code];
-                                     reject(errorCode,error.domain,error);
+    [PushClientManager.defaultManager removeTag:tagName
+                                        success:^(NSInteger count) {
+                                            resolve(@{@"count":@(count)});
+                                        } failure:^(NSError *error) {
+                                            NSString *errorCode = [NSString stringWithFormat:@"%zd",error.code];
+                                            reject(errorCode,error.domain,error);
                                    }];
 }
 RCT_EXPORT_METHOD(removeTags:(NSArray *) tagsName resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
-  [PushClientManager.defaultManager removeTags:tagsName
-                                      success:^(NSInteger count) {
-                                        resolve(@[@{@"count":@(count)}]);
-                                      } failure:^(NSError *error) {
-                                        NSString *errorCode = [NSString stringWithFormat:@"%zd",error.code];
-                                        reject(errorCode,error.domain,error);
+    [PushClientManager.defaultManager removeTags:tagsName
+                                         success:^(NSInteger count) {
+                                             resolve(@{@"count":@(count)});
+                                         } failure:^(NSError *error) {
+                                             NSString *errorCode = [NSString stringWithFormat:@"%zd",error.code];
+                                             reject(errorCode,error.domain,error);
                                       }];
 }
 
