@@ -357,6 +357,50 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
     }
 
     @ReactMethod
+    public void publish(ReadableMap message, final Promise promise) {
+        ReadableMap dataMap = message.getMap("data");
+        String body = message.getString("content");
+        String userId = message.getString("userId");
+        String channel = message.getString("channel");
+
+        PushMessage msg = new PushMessage();
+
+        if (body != null){
+            msg.setBody(body);
+        }
+        if (userId != null){
+            msg.setUser(userId);
+        }
+        if (userId != null){
+            msg.setUser(userId);
+        }
+        if (channel != null){
+            msg.setChannel(channel);
+        }
+        try {
+            if (dataMap != null) {
+                JSONObject data = toJsonObject(dataMap);
+                msg.setData(data);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+            promise.reject(e);
+        }
+
+        chabok.publish(msg, new Callback() {
+            @Override
+            public void onSuccess(Object o) {
+                promise.resolve(o);
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+                promise.reject(throwable);
+            }
+        });
+    }
+
+    @ReactMethod
     public void addTag(String tag, final Promise promise) {
         String[] tagsName = new String[1];
         tagsName[0] = tag;
