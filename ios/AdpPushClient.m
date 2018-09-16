@@ -28,15 +28,16 @@ RCT_EXPORT_METHOD(init:(NSString *) appId
                   password:(NSString *) password
                   promise:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
-  self.appId = appId;
-  [PushClientManager.defaultManager addDelegate:self];
-  [PushClientManager.defaultManager application:UIApplication.sharedApplication
-                  didFinishLaunchingWithOptions:nil];
-  
-  BOOL state = [PushClientManager.defaultManager registerApplication:appId
-                                                              apiKey:apiKey
-                                                            userName:username
-                                                            password:password];
+    NSArray *appIds = [appId componentsSeparatedByString:@"/"];
+    self.appId = appIds.firstObject;
+    [PushClientManager.defaultManager addDelegate:self];
+    [PushClientManager.defaultManager application:UIApplication.sharedApplication
+                    didFinishLaunchingWithOptions:nil];
+    
+    BOOL state = [PushClientManager.defaultManager registerApplication:self.appId
+                                                                apiKey:apiKey
+                                                              userName:username
+                                                              password:password];
   if (state) {
     RCTLogInfo(@"Initilized sucessfully");
     resolve(@{@"result":@"Initilized sucessfully"});
