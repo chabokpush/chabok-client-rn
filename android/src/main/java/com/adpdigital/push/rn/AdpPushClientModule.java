@@ -286,10 +286,13 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
 
     @ReactMethod
     public void register(String userId, ReadableArray channels) {
-        String[] chs = new String[channels.size()];
-        for (int i = 0; i < channels.size(); i++) {
-            String ch = channels.getString(i);
-            chs[i] = ch;
+        String[] chs = new String[0];
+        if (channels != null){
+            chs = new String[channels.size()];
+            for (int i = 0; i < channels.size(); i++) {
+                String ch = channels.getString(i);
+                chs[i] = ch;
+            }
         }
         chabok.register(userId, chs);
     }
