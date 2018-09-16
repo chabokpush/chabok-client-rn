@@ -327,41 +327,44 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
         chabok.setDevelopment(devMode);
     }
 
-    @ReactMethod
-    public void publish(String channel, String text, final Promise promise) {
-        chabok.publish(channel, text, new Callback() {
-            @Override
-            public void onSuccess(Object o) {
-                promise.resolve(o);
-            }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-                promise.reject(throwable);
-            }
-        });
-    }
-
-    @ReactMethod
-    public void publish(String userId, String channel, String text, final Promise promise) {
-        chabok.publish(userId, channel, text, new Callback() {
-            @Override
-            public void onSuccess(Object o) {
-                Log.d(TAG, "The publish method onSuccess invoked.");
-                promise.resolve(o);
-            }
-
-            @Override
-            public void onFailure(Throwable throwable) {
-                Log.d(TAG, "The publish method onFailure invoked.");
-                promise.reject(throwable);
-            }
-        });
-    }
+//    @ReactMethod
+//    public void publish(String channel, String text, final Promise promise) {
+//        chabok.publish(channel, text, new Callback() {
+//            @Override
+//            public void onSuccess(Object o) {
+//                promise.resolve(o);
+//            }
+//
+//            @Override
+//            public void onFailure(Throwable throwable) {
+//                promise.reject(throwable);
+//            }
+//        });
+//    }
+//
+//    @ReactMethod
+//    public void publish(String userId, String channel, String text, final Promise promise) {
+//        chabok.publish(userId, channel, text, new Callback() {
+//            @Override
+//            public void onSuccess(Object o) {
+//                Log.d(TAG, "The publish method onSuccess invoked.");
+//                promise.resolve(o);
+//            }
+//
+//            @Override
+//            public void onFailure(Throwable throwable) {
+//                Log.d(TAG, "The publish method onFailure invoked.");
+//                promise.reject(throwable);
+//            }
+//        });
+//    }
 
     @ReactMethod
     public void publish(ReadableMap message, final Promise promise) {
-        ReadableMap dataMap = message.getMap("data");
+        ReadableMap dataMap = null;
+        if (message.hasKey("data")){
+            dataMap = message.getMap("data");
+        }
         String body = message.getString("content");
         String userId = message.getString("userId");
         String channel = message.getString("channel");
