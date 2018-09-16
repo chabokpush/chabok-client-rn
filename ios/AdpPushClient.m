@@ -131,7 +131,7 @@ RCT_EXPORT_METHOD(register:(NSString *)userId channels:(NSArray *) channels) {
   }
 }
 
-RCT_EXPORT_METHOD(unRegister) {
+RCT_EXPORT_METHOD(unregister) {
   [PushClientManager.defaultManager unregisterUser];
 }
 
@@ -222,7 +222,7 @@ RCT_EXPORT_METHOD(subscribe:(NSString *) channel) {
 }
 
 #pragma mark - unsubscribe
-RCT_EXPORT_METHOD(unsubscribe:(NSString *) channel) {
+RCT_EXPORT_METHOD(unSubscribe:(NSString *) channel) {
   [PushClientManager.defaultManager unsubscribe:channel];
 }
 

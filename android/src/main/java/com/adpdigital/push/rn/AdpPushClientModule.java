@@ -295,7 +295,7 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
     }
 
     @ReactMethod
-    public void unRegister() {
+    public void unregister() {
         chabok.unregister();
     }
 
@@ -482,7 +482,7 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
     }
 
     @ReactMethod
-    public void unsubscribe(String channel, final Promise promise) {
+    public void unSubscribe(String channel, final Promise promise) {
         if (!TextUtils.isEmpty(channel)) {
             chabok.unsubscribe(channel, new Callback() {
                 @Override
