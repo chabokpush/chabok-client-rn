@@ -204,7 +204,7 @@ this.chabok.init(options.appId, options.apiKey, options.username, options.passwo
 With using `setDevelopment` [method](https://github.com/chabokpush/chabok-starter-rn/blob/6794345acc1498b55cda8759b6e26550b21f9c6f/App.js#L34) can change the ChabokPush environment to sandbox or production :
 
 ```js
-this.chabok.setDevelopment(devMode);
+this.chabok.setDevelopment(true);
 ```
 
 ### Register user
