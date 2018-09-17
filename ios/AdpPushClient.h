@@ -9,6 +9,6 @@
 #import "React/RCTBridgeModule.h"
 #import "React/RCTEventEmitter.h"
 
-@interface AdpPushClient : RCTEventEmitter <RCTBridgeModule>
+@interface AdpPushClient : RCTEventEmitter <RCTBridgeModule,RCTInvalidating>
 
 @end
