@@ -197,43 +197,9 @@ this.chabok.init(options.appId, options.apiKey, options.username, options.passwo
     .catch((error) => {
         console.log(error);
         });
-        
-this.chabok.setDevelopment(true);
-
-const chabokEmitter = new NativeEventEmitter(NativeModules.AdpPushClient);
-
-chabokEmitter.addListener(
-  'connectionStatus',
-  (status) => {
-    console.log('connectionStatus', status)
-  }
-);
-
-chabokEmitter.addListener(
-  'ChabokMessageReceived',
-  (message) => {
-    console.log("\nChabok Message Received :", message);
-  }
-);
-
-// register to chabok service
-this.chabok.register(USER, channels);
-
-// subscribe to channel
-this.chabok.subscribe(channel).then(res => () => {
-        console.log(res);
-        alert('subscribe success');
-    });
-    
-// publish message
-this.chabok.publish(channel, msg)
-    .then(res => console.log(res))
-    .catch(error => console.log(error));
-
-// unsubscribe
-this.chabok.unsubscribe(channel)
-    .then(res => () => {
-            console.log(res);
-        })
-    .catch(error => console.log(error));
 ```
+
+### Change chabok environment
+With using `setDevelopment` method can change the ChabokPush environment to sandbox or production :
+
+https://github.com/chabokpush/chabok-starter-rn/blob/6794345acc1498b55cda8759b6e26550b21f9c6f/App.js#L34
