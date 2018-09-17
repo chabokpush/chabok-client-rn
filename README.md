@@ -213,7 +213,7 @@ To [register](https://github.com/chabokpush/chabok-starter-rn/blob/6794345acc149
 this.chabok.register('USER_ID');
 ```
 
-### Get message
+### Getting message
 To getting the ChabokPush [message](https://github.com/chabokpush/chabok-starter-rn/blob/6794345acc1498b55cda8759b6e26550b21f9c6f/App.js#L70-L76) `addListener` on `ChabokMessageReceived` event:
 
 ```js
@@ -222,11 +222,11 @@ const chabokEmitter = new NativeEventEmitter(NativeModules.AdpPushClient);
 chabokEmitter.addListener( 'ChabokMessageReceived',
     (msg) => {
         const messageJson = this.getMessages() + JSON.stringify(msg);
-        this.setState({messageReceived: messageJson});
+        alert(messageJson);
     });
 ```
 
-### Get connection status
+### Getting connection status
 To get [connection state](https://github.com/chabokpush/chabok-starter-rn/blob/6794345acc1498b55cda8759b6e26550b21f9c6f/App.js#L44-L68) `addListener` on `connectionStatus` event :
 
 ```js
@@ -235,24 +235,15 @@ const chabokEmitter = new NativeEventEmitter(NativeModules.AdpPushClient);
 chabokEmitter.addListener(
     'connectionStatus',
         (status) => {
-            let connectionColor = 'red';
-            let connectionState = 'error';
-
             if (status === 'CONNECTED') {
-                connectionColor = 'green';
-                connectionState = 'Connected';
+                //Connected to chabok
             } else if (status === 'CONNECTING') {
-                connectionColor = 'yellow';
-                connectionState = 'Connecting';
+                //Connecting to chabok
             } else if (status === 'DISCONNECTED') {
-                connectionColor = 'red';
-                connectionState = 'Disconnected';
+                //Disconnected
+            } else {
+                // Closed
             }
-
-            this.setState({
-                connectionColor,
-                connectionState
-                    });
     });
 ```
 
@@ -295,9 +286,9 @@ this.chabok.track('TRACK_NAME', [OBJECT]);
 
 Adding [tag](https://github.com/chabokpush/chabok-starter-rn/blob/6794345acc1498b55cda8759b6e26550b21f9c6f/App.js#L135-L139) in the ChabokPush have `addTag` and `addTags` methods:
 ```js
-this.chabok.addTag(this.state.tagName)
+this.chabok.addTag('TAG_NAME')
     .then(res => {
-        alert(this.state.tagName + ' tag was assign to ' + this.chabok.getUserId() + ' user');
+        alert('This tag was assign to ' + this.chabok.getUserId() + ' user');
         })
     .catch(_ => console.warn("An error happend adding tag ...",_));
 ```
@@ -306,9 +297,9 @@ this.chabok.addTag(this.state.tagName)
 
 [Removing](https://github.com/chabokpush/chabok-starter-rn/blob/6794345acc1498b55cda8759b6e26550b21f9c6f/App.js#L147-L151) tag in the ChabokPush have `removeTag` and `removeTags` methods:
 ```js
-this.chabok.removeTag(this.state.tagName)
+this.chabok.removeTag('TAG_NAME')
     .then(res => {
-        alert(this.state.tagName + ' tag was removed from ' + this.chabok.getUserId() + ' user');
+        alert('This tag was removed from ' + this.chabok.getUserId() + ' user');
         })
     .catch(_ => console.warn("An error happend removing tag ..."));
 ```
