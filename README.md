@@ -256,7 +256,7 @@ chabokEmitter.addListener(
     });
 ```
 
-### Publish message:
+### Publish message
 
 For [publishing](https://github.com/chabokpush/chabok-starter-rn/blob/6794345acc1498b55cda8759b6e26550b21f9c6f/App.js#L120-L125) a message use `publish` method:
 
@@ -268,4 +268,47 @@ const msg = {
     data: OBJECT
         };
 this.chabok.publish(msg)
+```
+
+### Subscribe on channel
+
+To [subscribing](https://github.com/chabokpush/chabok-starter-rn/blob/6794345acc1498b55cda8759b6e26550b21f9c6f/App.js#L104) on a channel use `subscribe` method:
+```js
+this.chabok.subscribe('CHANNEL_NAME');
+```
+
+### Unsubscribe to channel
+
+To [unsubscribing](https://github.com/chabokpush/chabok-starter-rn/blob/6794345acc1498b55cda8759b6e26550b21f9c6f/App.js#L111-L115) to channel use `unSubscribe` method: 
+```js
+this.chabok.unSubscribe('CHANNEL_NAME');
+```
+
+### Track
+
+To [track](https://github.com/chabokpush/chabok-starter-rn/blob/6794345acc1498b55cda8759b6e26550b21f9c6f/App.js#L159) user interactions  use `track` method :
+```js
+this.chabok.track('TRACK_NAME', [OBJECT]);
+```
+
+### Add tag
+
+Adding [tag](https://github.com/chabokpush/chabok-starter-rn/blob/6794345acc1498b55cda8759b6e26550b21f9c6f/App.js#L135-L139) in the ChabokPush have `addTag` and `addTags` methods:
+```js
+this.chabok.addTag(this.state.tagName)
+    .then(res => {
+        alert(this.state.tagName + ' tag was assign to ' + this.chabok.getUserId() + ' user');
+        })
+    .catch(_ => console.warn("An error happend adding tag ...",_));
+```
+
+### Remove tag
+
+[Removing](https://github.com/chabokpush/chabok-starter-rn/blob/6794345acc1498b55cda8759b6e26550b21f9c6f/App.js#L147-L151) tag in the ChabokPush have `removeTag` and `removeTags` methods:
+```js
+this.chabok.removeTag(this.state.tagName)
+    .then(res => {
+        alert(this.state.tagName + ' tag was removed from ' + this.chabok.getUserId() + ' user');
+        })
+    .catch(_ => console.warn("An error happend removing tag ..."));
 ```
