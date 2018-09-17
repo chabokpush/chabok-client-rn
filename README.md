@@ -46,7 +46,7 @@ android {
 dependencies {
     ...
     compile "com.google.android.gms:play-services-gcm:10.2.6"
-    compile 'me.leolin:ShortcutBadger:1.1.18@aar'
+    compile 'me.leolin:ShortcutBadger:1.1.22@aar'
     compile 'com.adpdigital.push:chabok-lib:+'
     ...
 }
@@ -99,7 +99,7 @@ private AdpPushClient chabok = null;
                    chabok = AdpPushClient.init(
                        getApplicationContext(),
                        MainActivity.class,
-                       "YOUR_APP_ID",
+                       "YOUR_APP_ID/SENDER_ID",
                        "YOUR_API_KEY",
                        "SDK_USERNAME",
                        "SDK_PASSWORD"
@@ -144,7 +144,13 @@ end
 ```objectivec
 #import <AdpPushClient/AdpPushClient.h>
 
-...
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    if ([PushClientManager.defaultManager application:application didFinishLaunchingWithOptions:launchOptions]) {
+        NSLog(@"Application was launch by clicking on Notification...");
+    }
+    
+    ...
+   }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error{
   // Hook and handle failure of get Device token from Apple APNS Server
@@ -174,21 +180,25 @@ import { NativeEventEmitter, NativeModules } from 'react-native';
 import chabok from 'react-native-chabok';
 
 const options = {
-  "appId": "APP_ID",
+  "appId": "APP_ID/GOOGLE_SENDER_ID",
   "apiKey": "API_KEY",
   "username": "USERNAME",
-  "password": "PASSWORD",
-  "isDev": true
+  "password": "PASSWORD"
 };
 
 const USER = "react_native_user_ID";
 var channels = ["sport", "private/news"];
 this.chabok = new chabok.AdpPushClient();
 
-this.chabok.initializeApp('APP_Name', options , (response) => {
-  console.log('app initialized', response)
-});
-
+this.chabok.init(options.appId, options.apiKey, options.username, options.password)
+    .then((state) => {
+        console.log(state);
+        })
+    .catch((error) => {
+        console.log(error);
+        });
+        
+this.chabok.setDevelopment(true);
 
 const chabokEmitter = new NativeEventEmitter(NativeModules.AdpPushClient);
 
