@@ -174,7 +174,11 @@ didFailToRegisterForRemoteNotificationsWithError:error];
 ## Basic Usage
 In your `App.js`:
 
-```javascript
+
+### Initialize
+For [initlializing](https://github.com/chabokpush/chabok-starter-rn/blob/6794345acc1498b55cda8759b6e26550b21f9c6f/App.js#L36-L42) the ChabokPush with paramteres follow the bellow code:
+
+```js
 
 import { NativeEventEmitter, NativeModules } from 'react-native';
 import chabok from 'react-native-chabok';
@@ -186,10 +190,7 @@ const options = {
   "password": "PASSWORD"
 };
 
-const USER = "react_native_user_ID";
-var channels = ["sport", "private/news"];
 this.chabok = new chabok.AdpPushClient();
-
 this.chabok.init(options.appId, options.apiKey, options.username, options.password)
     .then((state) => {
         console.log(state);
@@ -200,6 +201,71 @@ this.chabok.init(options.appId, options.apiKey, options.username, options.passwo
 ```
 
 ### Change chabok environment
-With using `setDevelopment` method can change the ChabokPush environment to sandbox or production :
+With using `setDevelopment` [method](https://github.com/chabokpush/chabok-starter-rn/blob/6794345acc1498b55cda8759b6e26550b21f9c6f/App.js#L34) can change the ChabokPush environment to sandbox or production :
 
-https://github.com/chabokpush/chabok-starter-rn/blob/6794345acc1498b55cda8759b6e26550b21f9c6f/App.js#L33-L35
+```js
+this.chabok.setDevelopment(devMode);
+```
+
+### Register user
+To [register](https://github.com/chabokpush/chabok-starter-rn/blob/6794345acc1498b55cda8759b6e26550b21f9c6f/App.js#L78-L85) user in the ChabokPush service use `register` method:
+```js
+this.chabok.register('USER_ID');
+```
+
+### Get message
+To getting the ChabokPush [message](https://github.com/chabokpush/chabok-starter-rn/blob/6794345acc1498b55cda8759b6e26550b21f9c6f/App.js#L70-L76) `addListener` on `ChabokMessageReceived` event:
+
+```js
+const chabokEmitter = new NativeEventEmitter(NativeModules.AdpPushClient);
+
+chabokEmitter.addListener( 'ChabokMessageReceived',
+    (msg) => {
+        const messageJson = this.getMessages() + JSON.stringify(msg);
+        this.setState({messageReceived: messageJson});
+    });
+```
+
+### Get connection status
+To get [connection state](https://github.com/chabokpush/chabok-starter-rn/blob/6794345acc1498b55cda8759b6e26550b21f9c6f/App.js#L44-L68) `addListener` on `connectionStatus` event :
+
+```js
+const chabokEmitter = new NativeEventEmitter(NativeModules.AdpPushClient);
+
+chabokEmitter.addListener(
+    'connectionStatus',
+        (status) => {
+            let connectionColor = 'red';
+            let connectionState = 'error';
+
+            if (status === 'CONNECTED') {
+                connectionColor = 'green';
+                connectionState = 'Connected';
+            } else if (status === 'CONNECTING') {
+                connectionColor = 'yellow';
+                connectionState = 'Connecting';
+            } else if (status === 'DISCONNECTED') {
+                connectionColor = 'red';
+                connectionState = 'Disconnected';
+            }
+
+            this.setState({
+                connectionColor,
+                connectionState
+                    });
+    });
+```
+
+### Publish message:
+
+For [publishing](https://github.com/chabokpush/chabok-starter-rn/blob/6794345acc1498b55cda8759b6e26550b21f9c6f/App.js#L120-L125) a message use `publish` method:
+
+```js
+const msg = {
+    channel: "default",
+    userId: "USER_ID",
+    content:'Hello world',
+    data: OBJECT
+        };
+this.chabok.publish(msg)
+```
