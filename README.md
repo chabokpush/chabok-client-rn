@@ -214,7 +214,7 @@ this.chabok.register('USER_ID');
 ```
 
 ### Getting message
-To getting the ChabokPush [message](https://github.com/chabokpush/chabok-starter-rn/blob/6794345acc1498b55cda8759b6e26550b21f9c6f/App.js#L70-L76) `addListener` on `ChabokMessageReceived` event:
+To get the ChabokPush [message](https://github.com/chabokpush/chabok-starter-rn/blob/6794345acc1498b55cda8759b6e26550b21f9c6f/App.js#L70-L76) `addListener` on `ChabokMessageReceived` event:
 
 ```js
 const chabokEmitter = new NativeEventEmitter(NativeModules.AdpPushClient);
@@ -263,14 +263,14 @@ this.chabok.publish(msg)
 
 ### Subscribe on channel
 
-To [subscribing](https://github.com/chabokpush/chabok-starter-rn/blob/6794345acc1498b55cda8759b6e26550b21f9c6f/App.js#L104) on a channel use `subscribe` method:
+To [subscribe](https://github.com/chabokpush/chabok-starter-rn/blob/6794345acc1498b55cda8759b6e26550b21f9c6f/App.js#L104) on a channel use `subscribe` method:
 ```js
 this.chabok.subscribe('CHANNEL_NAME');
 ```
 
 ### Unsubscribe to channel
 
-To [unsubscribing](https://github.com/chabokpush/chabok-starter-rn/blob/6794345acc1498b55cda8759b6e26550b21f9c6f/App.js#L111-L115) to channel use `unSubscribe` method: 
+To [unsubscribe](https://github.com/chabokpush/chabok-starter-rn/blob/6794345acc1498b55cda8759b6e26550b21f9c6f/App.js#L111-L115) to channel use `unSubscribe` method: 
 ```js
 this.chabok.unSubscribe('CHANNEL_NAME');
 ```
