@@ -488,28 +488,75 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
     }
 
     @ReactMethod
+    public void subscribeEvent(String eventName, final Promise promise) {
+        if (TextUtils.isEmpty(eventName)) {
+            promise.reject(new IllegalArgumentException("eventName parameter is null or empty"));
+            return;
+        }
+        chabok.subscribeEvent(eventName, new Callback() {
+            @Override
+            public void onSuccess(Object value) {
+                promise.resolve(true);
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+                promise.reject(throwable);
+            }
+        });
+    }
+
+    @ReactMethod
+    public void subscribeEvent(String eventName, String installationId, final Promise promise) {
+        if (TextUtils.isEmpty(eventName)) {
+            promise.reject(new IllegalArgumentException("eventName parameter is null or empty"));
+            return;
+        }
+        if (TextUtils.isEmpty(installationId)) {
+            promise.reject(new IllegalArgumentException("installationId parameter is null or empty"));
+            return;
+        }
+        chabok.subscribeEvent(eventName, installationId, new Callback() {
+            @Override
+            public void onSuccess(Object value) {
+                promise.resolve(true);
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+                promise.reject(throwable);
+            }
+        });
+    }
+
+    @ReactMethod
     public void subscribe(String channel, final Promise promise) {
-        if (!TextUtils.isEmpty(channel)) {
-            chabok.subscribe(channel, true, new Callback() {
-                @Override
-                public void onSuccess(Object value) {
+        if (TextUtils.isEmpty(channel)) {
+            promise.reject(new IllegalArgumentException("channel parameter is null or empty"));
+            return;
+        }
+        chabok.subscribe(channel, true, new Callback() {
+            @Override
+            public void onSuccess(Object value) {
                     promise.resolve(true);
                 }
 
                 @Override
                 public void onFailure(Throwable throwable) {
                     promise.reject(throwable);
-                }
-            });
-        }
+            }
+        });
     }
 
     @ReactMethod
     public void unSubscribe(String channel, final Promise promise) {
-        if (!TextUtils.isEmpty(channel)) {
-            chabok.unsubscribe(channel, new Callback() {
-                @Override
-                public void onSuccess(Object value) {
+        if (TextUtils.isEmpty(channel)) {
+            promise.reject(new IllegalArgumentException("channel parameter is null or empty"));
+            return;
+        }
+        chabok.unsubscribe(channel, new Callback() {
+            @Override
+            public void onSuccess(Object value) {
                     promise.resolve(true);
                 }
 
