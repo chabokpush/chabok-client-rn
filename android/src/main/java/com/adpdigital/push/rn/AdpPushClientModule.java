@@ -11,6 +11,7 @@ import android.util.Log;
 import com.adpdigital.push.AdpPushClient;
 import com.adpdigital.push.Callback;
 import com.adpdigital.push.ConnectionStatus;
+import com.adpdigital.push.EventMessage;
 import com.adpdigital.push.PushMessage;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -165,11 +166,27 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
                 //response.putMap("data", msg.getData());
                 //response.putMap("notification", msg.getNotification());
 
+                sendEvent("onMessage", response);
                 sendEvent("ChabokMessageReceived", response);
             }
         });
     }
 
+    public void onEvent(final EventMessage eventMessage){
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                WritableMap response = Arguments.createMap();
+
+                response.putString("id", eventMessage.getId());
+                response.putString("eventName", eventMessage.getName());
+                response.putString("installationId", eventMessage.getInstallationId());
+                response.putMap("data", toWritableMap(eventMessage.getData()));
+
+                sendEvent("onEvent", response);
+            }
+        });
+    }
     WritableMap toWritableMap(JSONObject json) {
         WritableMap response = Arguments.createMap();
         Iterator iter = json.keys();
