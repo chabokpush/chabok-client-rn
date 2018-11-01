@@ -46,7 +46,7 @@ android {
 dependencies {
     ...
     compile "com.google.android.gms:play-services-gcm:10.2.6"
-    compile 'me.leolin:ShortcutBadger:1.1.18@aar'
+    compile 'me.leolin:ShortcutBadger:1.1.22@aar'
     compile 'com.adpdigital.push:chabok-lib:+'
     ...
 }
@@ -99,7 +99,7 @@ private AdpPushClient chabok = null;
                    chabok = AdpPushClient.init(
                        getApplicationContext(),
                        MainActivity.class,
-                       "YOUR_APP_ID",
+                       "YOUR_APP_ID/SENDER_ID",
                        "YOUR_API_KEY",
                        "SDK_USERNAME",
                        "SDK_PASSWORD"
@@ -144,7 +144,13 @@ end
 ```objectivec
 #import <AdpPushClient/AdpPushClient.h>
 
-...
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+    if ([PushClientManager.defaultManager application:application didFinishLaunchingWithOptions:launchOptions]) {
+        NSLog(@"Application was launch by clicking on Notification...");
+    }
+    
+    ...
+   }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error{
   // Hook and handle failure of get Device token from Apple APNS Server
@@ -168,62 +174,132 @@ didFailToRegisterForRemoteNotificationsWithError:error];
 ## Basic Usage
 In your `App.js`:
 
-```javascript
+
+### Initialize
+For [initlializing](https://github.com/chabokpush/chabok-starter-rn/blob/6794345acc1498b55cda8759b6e26550b21f9c6f/App.js#L36-L42) the ChabokPush with paramteres follow the bellow code:
+
+```js
 
 import { NativeEventEmitter, NativeModules } from 'react-native';
 import chabok from 'react-native-chabok';
 
 const options = {
-  "appId": "APP_ID",
+  "appId": "APP_ID/GOOGLE_SENDER_ID",
   "apiKey": "API_KEY",
   "username": "USERNAME",
-  "password": "PASSWORD",
-  "isDev": true
+  "password": "PASSWORD"
 };
 
-const USER = "react_native_user_ID";
-var channels = ["sport", "private/news"];
 this.chabok = new chabok.AdpPushClient();
+this.chabok.init(options.appId, options.apiKey, options.username, options.password)
+    .then((state) => {
+        console.log(state);
+        })
+    .catch((error) => {
+        console.log(error);
+        });
+```
 
-this.chabok.initializeApp('APP_Name', options , (response) => {
-  console.log('app initialized', response)
-});
+### Change chabok environment
+With using `setDevelopment` [method](https://github.com/chabokpush/chabok-starter-rn/blob/6794345acc1498b55cda8759b6e26550b21f9c6f/App.js#L34) can change the ChabokPush environment to sandbox or production :
 
+```js
+this.chabok.setDevelopment(true);
+```
 
+### Register user
+To [register](https://github.com/chabokpush/chabok-starter-rn/blob/6794345acc1498b55cda8759b6e26550b21f9c6f/App.js#L78-L85) user in the ChabokPush service use `register` method:
+```js
+this.chabok.register('USER_ID');
+```
+
+### Getting message
+To get the ChabokPush [message](https://github.com/chabokpush/chabok-starter-rn/blob/6794345acc1498b55cda8759b6e26550b21f9c6f/App.js#L70-L76) `addListener` on `ChabokMessageReceived` event:
+
+```js
+const chabokEmitter = new NativeEventEmitter(NativeModules.AdpPushClient);
+
+chabokEmitter.addListener( 'ChabokMessageReceived',
+    (msg) => {
+        const messageJson = this.getMessages() + JSON.stringify(msg);
+        alert(messageJson);
+    });
+```
+
+### Getting connection status
+To get [connection state](https://github.com/chabokpush/chabok-starter-rn/blob/6794345acc1498b55cda8759b6e26550b21f9c6f/App.js#L44-L68) `addListener` on `connectionStatus` event :
+
+```js
 const chabokEmitter = new NativeEventEmitter(NativeModules.AdpPushClient);
 
 chabokEmitter.addListener(
-  'connectionStatus',
-  (status) => {
-    console.log('connectionStatus', status)
-  }
-);
-
-chabokEmitter.addListener(
-  'ChabokMessageReceived',
-  (message) => {
-    console.log("\nChabok Message Received :", message);
-  }
-);
-
-// register to chabok service
-this.chabok.register(USER, channels);
-
-// subscribe to channel
-this.chabok.subscribe(channel).then(res => () => {
-        console.log(res);
-        alert('subscribe success');
+    'connectionStatus',
+        (status) => {
+            if (status === 'CONNECTED') {
+                //Connected to chabok
+            } else if (status === 'CONNECTING') {
+                //Connecting to chabok
+            } else if (status === 'DISCONNECTED') {
+                //Disconnected
+            } else {
+                // Closed
+            }
     });
-    
-// publish message
-this.chabok.publish(channel, msg)
-    .then(res => console.log(res))
-    .catch(error => console.log(error));
+```
 
-// unsubscribe
-this.chabok.unsubscribe(channel)
-    .then(res => () => {
-            console.log(res);
+### Publish message
+
+For [publishing](https://github.com/chabokpush/chabok-starter-rn/blob/6794345acc1498b55cda8759b6e26550b21f9c6f/App.js#L120-L125) a message use `publish` method:
+
+```js
+const msg = {
+    channel: "default",
+    userId: "USER_ID",
+    content:'Hello world',
+    data: OBJECT
+        };
+this.chabok.publish(msg)
+```
+
+### Subscribe on channel
+
+To [subscribe](https://github.com/chabokpush/chabok-starter-rn/blob/6794345acc1498b55cda8759b6e26550b21f9c6f/App.js#L104) on a channel use `subscribe` method:
+```js
+this.chabok.subscribe('CHANNEL_NAME');
+```
+
+### Unsubscribe to channel
+
+To [unsubscribe](https://github.com/chabokpush/chabok-starter-rn/blob/6794345acc1498b55cda8759b6e26550b21f9c6f/App.js#L111-L115) to channel use `unSubscribe` method: 
+```js
+this.chabok.unSubscribe('CHANNEL_NAME');
+```
+
+### Track
+
+To [track](https://github.com/chabokpush/chabok-starter-rn/blob/6794345acc1498b55cda8759b6e26550b21f9c6f/App.js#L159) user interactions  use `track` method :
+```js
+this.chabok.track('TRACK_NAME', [OBJECT]);
+```
+
+### Add tag
+
+Adding [tag](https://github.com/chabokpush/chabok-starter-rn/blob/6794345acc1498b55cda8759b6e26550b21f9c6f/App.js#L135-L139) in the ChabokPush have `addTag` and `addTags` methods:
+```js
+this.chabok.addTag('TAG_NAME')
+    .then(res => {
+        alert('This tag was assign to ' + this.chabok.getUserId() + ' user');
         })
-    .catch(error => console.log(error));
+    .catch(_ => console.warn("An error happend adding tag ...",_));
+```
+
+### Remove tag
+
+[Removing](https://github.com/chabokpush/chabok-starter-rn/blob/6794345acc1498b55cda8759b6e26550b21f9c6f/App.js#L147-L151) tag in the ChabokPush have `removeTag` and `removeTags` methods:
+```js
+this.chabok.removeTag('TAG_NAME')
+    .then(res => {
+        alert('This tag was removed from ' + this.chabok.getUserId() + ' user');
+        })
+    .catch(_ => console.warn("An error happend removing tag ..."));
 ```
