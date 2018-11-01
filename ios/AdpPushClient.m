@@ -239,9 +239,26 @@ RCT_EXPORT_METHOD(subscribe:(NSString *) channel) {
     [PushClientManager.defaultManager subscribe:channel];
 }
 
+RCT_EXPORT_METHOD(subscribeEvent:(NSString *) eventName) {
+  [PushClientManager.defaultManager subscribeEvent:eventName];
+}
+
+RCT_EXPORT_METHOD(subscribeEvent:(NSString *) eventName installationId:(NSString *) installation) {
+  [PushClientManager.defaultManager subscribeEvent:eventName installationId:installation];
+}
+
 #pragma mark - unsubscribe
 RCT_EXPORT_METHOD(unSubscribe:(NSString *) channel) {
     [PushClientManager.defaultManager unsubscribe:channel];
+}
+
+RCT_EXPORT_METHOD(unSubscribeEvent:(NSString *) eventName) {
+  [PushClientManager.defaultManager unsubscribeEvent:eventName];
+}
+
+RCT_EXPORT_METHOD(unSubscribeEvent:(NSString *) eventName installationId:(NSString *) installationId) {
+  [PushClientManager.defaultManager unsubscribeEvent:eventName
+                                      installationId:installationId];
 }
 
 #pragma mark - badge
