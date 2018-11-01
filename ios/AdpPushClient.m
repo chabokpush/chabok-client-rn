@@ -278,7 +278,12 @@ RCT_EXPORT_METHOD(track:(NSString *) trackName data:(NSDictionary *) data) {
 
 -(void) pushClientManagerDidReceivedMessage:(PushClientMessage *)message{
     if (self.bridge) {
-        [self sendEventWithName:@"ChabokMessageReceived" body:[message toDict]];
+      NSMutableDictionary *messageDict = [NSMutableDictionary.alloc initWithDictionary:[message toDict]];
+      [messageDict setObject:message.channel forKey:@"channel"];
+      
+      [self sendEventWithName:@"onMessage" body:messageDict];
+      [self sendEventWithName:@"ChabokMessageReceived" body:messageDict];
+}
     }
 }
 
