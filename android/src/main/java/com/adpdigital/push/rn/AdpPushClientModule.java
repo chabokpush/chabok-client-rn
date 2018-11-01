@@ -424,6 +424,17 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
     }
 
     @ReactMethod
+    public void publishEvent(String eventName, ReadableMap data, final Promise promise){
+        try {
+            JSONObject eventData = toJsonObject(data);
+            chabok.publishEvent(eventName, eventData);
+        } catch (JSONException e) {
+            e.printStackTrace();
+            promise.reject(e);
+        }
+    }
+
+    @ReactMethod
     public void addTag(String tag, final Promise promise) {
         String[] tagsName = new String[1];
         tagsName[0] = tag;
@@ -538,12 +549,12 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
         chabok.subscribe(channel, true, new Callback() {
             @Override
             public void onSuccess(Object value) {
-                    promise.resolve(true);
-                }
+                promise.resolve(true);
+            }
 
-                @Override
-                public void onFailure(Throwable throwable) {
-                    promise.reject(throwable);
+            @Override
+            public void onFailure(Throwable throwable) {
+                promise.reject(throwable);
             }
         });
     }
@@ -557,12 +568,12 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
         chabok.unsubscribe(channel, new Callback() {
             @Override
             public void onSuccess(Object value) {
-                    promise.resolve(true);
-                }
+                promise.resolve(true);
+            }
 
-                @Override
-                public void onFailure(Throwable throwable) {
-                    promise.reject(throwable);
+            @Override
+            public void onFailure(Throwable throwable) {
+                promise.reject(throwable);
             }
         });
     }
