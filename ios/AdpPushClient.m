@@ -273,7 +273,7 @@ RCT_EXPORT_METHOD(track:(NSString *) trackName data:(NSDictionary *) data) {
 
 #pragma mark - chabok delegate methods
 - (NSArray<NSString *> *)supportedEvents{
-    return @[@"connectionStatus",@"ChabokMessageReceived"];
+    return @[@"connectionStatus",@"onEvent",@"onMessage", @"ChabokMessageReceived"];
 }
 
 -(void) pushClientManagerDidReceivedMessage:(PushClientMessage *)message{
@@ -283,8 +283,19 @@ RCT_EXPORT_METHOD(track:(NSString *) trackName data:(NSDictionary *) data) {
       
       [self sendEventWithName:@"onMessage" body:messageDict];
       [self sendEventWithName:@"ChabokMessageReceived" body:messageDict];
-}
     }
+}
+
+-(void) pushClientManagerDidReceivedEventMessage:(EventMessage *)eventMessage{
+  if (self.bridge) {
+    NSDictionary *event = @{
+                          @"id":eventMessage.id,
+                          @"installationId":eventMessage.deviceId,
+                          @"eventName":eventMessage.eventName,
+                          @"data":eventMessage.data
+                          };
+    [self sendEventWithName:@"onEvent" body:event];
+  }
 }
 
 -(void) pushClientManagerDidChangedServerConnectionState {
