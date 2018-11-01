@@ -499,9 +499,50 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
                 @Override
                 public void onFailure(Throwable throwable) {
                     promise.reject(throwable);
-                }
-            });
+            }
+        });
+    }
+
+    @ReactMethod
+    public void unSubscribeEvent(String eventName, final Promise promise) {
+        if (TextUtils.isEmpty(eventName)) {
+            promise.reject(new IllegalArgumentException("eventName parameter is null or empty"));
+            return;
         }
+        chabok.unsubscribeEvent(eventName, new Callback() {
+            @Override
+            public void onSuccess(Object value) {
+                promise.resolve(true);
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+                promise.reject(throwable);
+            }
+        });
+    }
+
+    @ReactMethod
+    public void unSubscribeEvent(String eventName, String installationId, final Promise promise) {
+        if (TextUtils.isEmpty(eventName)) {
+            promise.reject(new IllegalArgumentException("eventName parameter is null or empty"));
+            return;
+        }
+        if (TextUtils.isEmpty(installationId)) {
+            promise.reject(new IllegalArgumentException("installationId parameter is null or empty"));
+            return;
+        }
+        chabok.unsubscribeEvent(eventName, installationId, new Callback() {
+            @Override
+            public void onSuccess(Object value) {
+                promise.resolve(true);
+            }
+
+            @Override
+            public void onFailure(Throwable throwable) {
+                promise.reject(throwable);
+            }
+        });
     }
 
     @Override
