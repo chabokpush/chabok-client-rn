@@ -227,6 +227,13 @@ RCT_EXPORT_METHOD(publish:(NSDictionary *) message resolver:(RCTPromiseResolveBl
     resolve(@{@"published":@(publishState)});
 }
 
+#pragma mark - publish event
+
+RCT_EXPORT_METHOD(publishEvent:(NSString *) eventName data:(NSDictionary *) data resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
+  [PushClientManager.defaultManager publishEvent:eventName data:data];
+}
+
 #pragma mark - subscribe
 RCT_EXPORT_METHOD(subscribe:(NSString *) channel) {
     [PushClientManager.defaultManager subscribe:channel];
