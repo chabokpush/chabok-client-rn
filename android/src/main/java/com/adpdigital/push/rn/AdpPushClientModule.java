@@ -524,20 +524,20 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
             return;
         }
         if (TextUtils.isEmpty(installationId)) {
-            promise.reject(new IllegalArgumentException("installationId parameter is null or empty"));
-            return;
-        }
-        chabok.subscribeEvent(eventName, installationId, new Callback() {
-            @Override
-            public void onSuccess(Object value) {
-                promise.resolve(true);
-            }
+            subscribeEvent(eventName, promise);
+        } else {
+            chabok.subscribeEvent(eventName, installationId, new Callback() {
+                @Override
+                public void onSuccess(Object value) {
+                    promise.resolve(true);
+                }
 
-            @Override
-            public void onFailure(Throwable throwable) {
-                promise.reject(throwable);
-            }
-        });
+                @Override
+                public void onFailure(Throwable throwable) {
+                    promise.reject(throwable);
+                }
+            });
+        }
     }
 
     @ReactMethod
@@ -584,17 +584,21 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
             promise.reject(new IllegalArgumentException("eventName parameter is null or empty"));
             return;
         }
-        chabok.unsubscribeEvent(eventName, new Callback() {
-            @Override
-            public void onSuccess(Object value) {
-                promise.resolve(true);
-            }
+        if (TextUtils.isEmpty(installationId)) {
+            unsubscribeEvent(eventName, promise);
+        } else {
+            chabok.unsubscribeEvent(eventName, installationId, new Callback() {
+                @Override
+                public void onSuccess(Object value) {
+                    promise.resolve(true);
+                }
 
-            @Override
-            public void onFailure(Throwable throwable) {
-                promise.reject(throwable);
-            }
-        });
+                 @Override
+                 public void onFailure(Throwable throwable) {
+                    promise.reject(throwable);
+                 }
+            });
+         }
     }
 
     @ReactMethod

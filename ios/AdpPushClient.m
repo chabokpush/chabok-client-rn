@@ -243,8 +243,12 @@ RCT_EXPORT_METHOD(subscribeEvent:(NSString *) eventName) {
   [PushClientManager.defaultManager subscribeEvent:eventName];
 }
 
-RCT_EXPORT_METHOD(subscribeEvent:(NSString *) eventName installationId:(NSString *) installation) {
-  [PushClientManager.defaultManager subscribeEvent:eventName installationId:installation];
+RCT_EXPORT_METHOD(subscribeEvent:(NSString *) eventName installationId:(NSString *) installationId) {
+    if (!installationId){
+        [PushClientManager.defaultManager subscribeEvent:eventName];
+    } else {
+        [PushClientManager.defaultManager subscribeEvent:eventName installationId:installationId];
+    }
 }
 
 #pragma mark - unsubscribe
@@ -257,8 +261,11 @@ RCT_EXPORT_METHOD(unSubscribeEvent:(NSString *) eventName) {
 }
 
 RCT_EXPORT_METHOD(unSubscribeEvent:(NSString *) eventName installationId:(NSString *) installationId) {
-  [PushClientManager.defaultManager unsubscribeEvent:eventName
-                                      installationId:installationId];
+    if (!installationId){
+        [PushClientManager.defaultManager unsubscribeEvent:eventName];
+    } else {
+        [PushClientManager.defaultManager unsubscribeEvent:eventName installationId:installationId];
+    }
 }
 
 #pragma mark - badge
