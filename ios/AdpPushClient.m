@@ -227,14 +227,45 @@ RCT_EXPORT_METHOD(publish:(NSDictionary *) message resolver:(RCTPromiseResolveBl
     resolve(@{@"published":@(publishState)});
 }
 
+#pragma mark - publish event
+
+RCT_EXPORT_METHOD(publishEvent:(NSString *) eventName data:(NSDictionary *) data resolver:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
+  [PushClientManager.defaultManager publishEvent:eventName data:data];
+}
+
 #pragma mark - subscribe
 RCT_EXPORT_METHOD(subscribe:(NSString *) channel) {
     [PushClientManager.defaultManager subscribe:channel];
 }
 
+RCT_EXPORT_METHOD(subscribeEvent:(NSString *) eventName) {
+  [PushClientManager.defaultManager subscribeEvent:eventName];
+}
+
+RCT_EXPORT_METHOD(subscribeEvent:(NSString *) eventName installationId:(NSString *) installationId) {
+    if (!installationId){
+        [PushClientManager.defaultManager subscribeEvent:eventName];
+    } else {
+        [PushClientManager.defaultManager subscribeEvent:eventName installationId:installationId];
+    }
+}
+
 #pragma mark - unsubscribe
 RCT_EXPORT_METHOD(unSubscribe:(NSString *) channel) {
     [PushClientManager.defaultManager unsubscribe:channel];
+}
+
+RCT_EXPORT_METHOD(unSubscribeEvent:(NSString *) eventName) {
+  [PushClientManager.defaultManager unsubscribeEvent:eventName];
+}
+
+RCT_EXPORT_METHOD(unSubscribeEvent:(NSString *) eventName installationId:(NSString *) installationId) {
+    if (!installationId){
+        [PushClientManager.defaultManager unsubscribeEvent:eventName];
+    } else {
+        [PushClientManager.defaultManager unsubscribeEvent:eventName installationId:installationId];
+    }
 }
 
 #pragma mark - badge
@@ -249,13 +280,29 @@ RCT_EXPORT_METHOD(track:(NSString *) trackName data:(NSDictionary *) data) {
 
 #pragma mark - chabok delegate methods
 - (NSArray<NSString *> *)supportedEvents{
-    return @[@"connectionStatus",@"ChabokMessageReceived"];
+    return @[@"connectionStatus",@"onEvent",@"onMessage", @"ChabokMessageReceived"];
 }
 
 -(void) pushClientManagerDidReceivedMessage:(PushClientMessage *)message{
     if (self.bridge) {
-        [self sendEventWithName:@"ChabokMessageReceived" body:[message toDict]];
+      NSMutableDictionary *messageDict = [NSMutableDictionary.alloc initWithDictionary:[message toDict]];
+      [messageDict setObject:message.channel forKey:@"channel"];
+      
+      [self sendEventWithName:@"onMessage" body:messageDict];
+      [self sendEventWithName:@"ChabokMessageReceived" body:messageDict];
     }
+}
+
+-(void) pushClientManagerDidReceivedEventMessage:(EventMessage *)eventMessage{
+  if (self.bridge) {
+    NSDictionary *event = @{
+                          @"id":eventMessage.id,
+                          @"installationId":eventMessage.deviceId,
+                          @"eventName":eventMessage.eventName,
+                          @"data":eventMessage.data
+                          };
+    [self sendEventWithName:@"onEvent" body:event];
+  }
 }
 
 -(void) pushClientManagerDidChangedServerConnectionState {
