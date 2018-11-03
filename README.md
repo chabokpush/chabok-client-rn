@@ -221,8 +221,7 @@ const chabokEmitter = new NativeEventEmitter(NativeModules.AdpPushClient);
 
 chabokEmitter.addListener( 'ChabokMessageReceived',
     (msg) => {
-        const messageJson = this.getMessages() + JSON.stringify(msg);
-        alert(messageJson);
+        alert(JSON.stringify(msg));
     });
 ```
 
@@ -273,6 +272,55 @@ this.chabok.subscribe('CHANNEL_NAME');
 To [unsubscribe](https://github.com/chabokpush/chabok-starter-rn/blob/6794345acc1498b55cda8759b6e26550b21f9c6f/App.js#L111-L115) to channel use `unSubscribe` method: 
 ```js
 this.chabok.unSubscribe('CHANNEL_NAME');
+```
+
+### Publish event
+
+To [publish](https://github.com/chabokpush/chabok-starter-rn/blob/cb4d3597cb7af63bb3a72165822a70a360898c2a/App.js#L155) an event use `publishEvent` method:
+```js
+this.chabok.publishEvent('EVENT_NAME', [OBJECT]);
+```
+
+### Subscribe on event
+
+To [subscribe on an event](https://github.com/chabokpush/chabok-starter-rn/blob/cb4d3597cb7af63bb3a72165822a70a360898c2a/App.js#L130) use `subscribeEvent` method:
+
+```js
+this.chabok.subscribeEvent("EVENT_NAME");
+```
+
+For subscribe on a single device use the other signature:
+
+```js
+this.chabok.subscribeEvent("EVENT_NAME","INSTALLATION_ID");
+```
+
+### Unsubscribe to event
+
+To [unsubscribe on an event](https://github.com/chabokpush/chabok-starter-rn/blob/cb4d3597cb7af63bb3a72165822a70a360898c2a/App.js#L138) use `unSubscribeEvent` method:
+
+```js
+this.chabok.unSubscribeEvent("EVENT_NAME");
+```
+
+For  unsubscribe to a single device use the other signature:
+
+```js
+this.chabok.unSubscribeEvent("EVENT_NAME", "INSTALLATION_ID");
+```
+
+### Getting event message
+
+To get the [EventMessage](https://github.com/chabokpush/chabok-starter-rn/blob/cb4d3597cb7af63bb3a72165822a70a360898c2a/App.js#L79-L85) define `onEvent` method to  `addListener`:
+
+```js
+const chabokEmitter = new NativeEventEmitter(NativeModules.AdpPushClient);
+
+chabokEmitter.addListener('onEvent', 
+	(eventMsg) => {
+		alert(JSON.stringify(eventMsg));
+	}
+);
 ```
 
 ### Track
