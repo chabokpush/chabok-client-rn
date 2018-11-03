@@ -1,4 +1,5 @@
 ## History
+
 ### v1.0.1 (3/11/2018)
 - Add `publishEvent` method.
 - Add `onEvent` listener to receive `eventMessage`.
