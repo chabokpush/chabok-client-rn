@@ -138,7 +138,16 @@ RCT_EXPORT_METHOD(unregister) {
 
 RCT_EXPORT_METHOD(getInstallationId:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     NSString *installationId = [PushClientManager.defaultManager getInstallationId];
-    resolve(installationId);
+    if (!installationId) {
+        NSError *error = [NSError.alloc initWithDomain:@"Not registered"
+                                                  code:500
+                                              userInfo:@{
+                                                         @"message":@"The installationId is null, You didn't register yet!"
+                                                         }];
+        reject(@"500",@"The installationId is null, You didn't register yet!",error);
+    } else {
+        resolve(installationId);
+}
 }
 
 RCT_EXPORT_METHOD(getUserId:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
