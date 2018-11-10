@@ -52,6 +52,6 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.google.android.gms:play-services-gcm:10.2.6'
 
-    compile 'me.leolin:ShortcutBadger:1.1.18@aar'
-    compile 'com.adpdigital.push:chabok-lib:2.13.2'
+    compile 'me.leolin:ShortcutBadger:1.1.22@aar'
+    compile 'com.adpdigital.push:chabok-lib:2.13.3'
 }
