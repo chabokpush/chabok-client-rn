@@ -147,12 +147,21 @@ RCT_EXPORT_METHOD(getInstallationId:(RCTPromiseResolveBlock)resolve rejecter:(RC
         reject(@"500",@"The installationId is null, You didn't register yet!",error);
     } else {
         resolve(installationId);
-}
+    }
 }
 
 RCT_EXPORT_METHOD(getUserId:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject) {
     NSString *userId = [PushClientManager.defaultManager userId];
-    resolve(userId);
+    if (!userId) {
+        NSError *error = [NSError.alloc initWithDomain:@"Not registered"
+                                                  code:500
+                                              userInfo:@{
+                                                         @"message":@"The userId is null, You didn't register yet!"
+                                                         }];
+        reject(@"500",@"The userId is null, You didn't register yet!",error);
+    } else {
+        resolve(userId);
+    }
 }
 
 #pragma mark - dev
@@ -240,7 +249,7 @@ RCT_EXPORT_METHOD(publish:(NSDictionary *) message resolver:(RCTPromiseResolveBl
 
 RCT_EXPORT_METHOD(publishEvent:(NSString *) eventName data:(NSDictionary *) data resolver:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
-  [PushClientManager.defaultManager publishEvent:eventName data:data];
+    [PushClientManager.defaultManager publishEvent:eventName data:data];
 }
 
 #pragma mark - subscribe
@@ -249,7 +258,7 @@ RCT_EXPORT_METHOD(subscribe:(NSString *) channel) {
 }
 
 RCT_EXPORT_METHOD(subscribeEvent:(NSString *) eventName) {
-  [PushClientManager.defaultManager subscribeEvent:eventName];
+    [PushClientManager.defaultManager subscribeEvent:eventName];
 }
 
 RCT_EXPORT_METHOD(subscribeEvent:(NSString *) eventName installationId:(NSString *) installationId) {
@@ -266,7 +275,7 @@ RCT_EXPORT_METHOD(unSubscribe:(NSString *) channel) {
 }
 
 RCT_EXPORT_METHOD(unSubscribeEvent:(NSString *) eventName) {
-  [PushClientManager.defaultManager unsubscribeEvent:eventName];
+    [PushClientManager.defaultManager unsubscribeEvent:eventName];
 }
 
 RCT_EXPORT_METHOD(unSubscribeEvent:(NSString *) eventName installationId:(NSString *) installationId) {
@@ -294,24 +303,24 @@ RCT_EXPORT_METHOD(track:(NSString *) trackName data:(NSDictionary *) data) {
 
 -(void) pushClientManagerDidReceivedMessage:(PushClientMessage *)message{
     if (self.bridge) {
-      NSMutableDictionary *messageDict = [NSMutableDictionary.alloc initWithDictionary:[message toDict]];
-      [messageDict setObject:message.channel forKey:@"channel"];
-      
-      [self sendEventWithName:@"onMessage" body:messageDict];
-      [self sendEventWithName:@"ChabokMessageReceived" body:messageDict];
+        NSMutableDictionary *messageDict = [NSMutableDictionary.alloc initWithDictionary:[message toDict]];
+        [messageDict setObject:message.channel forKey:@"channel"];
+        
+        [self sendEventWithName:@"onMessage" body:messageDict];
+        [self sendEventWithName:@"ChabokMessageReceived" body:messageDict];
     }
 }
 
 -(void) pushClientManagerDidReceivedEventMessage:(EventMessage *)eventMessage{
-  if (self.bridge) {
-    NSDictionary *event = @{
-                          @"id":eventMessage.id,
-                          @"installationId":eventMessage.deviceId,
-                          @"eventName":eventMessage.eventName,
-                          @"data":eventMessage.data
-                          };
-    [self sendEventWithName:@"onEvent" body:event];
-  }
+    if (self.bridge) {
+        NSDictionary *event = @{
+                                @"id":eventMessage.id,
+                                @"installationId":eventMessage.deviceId,
+                                @"eventName":eventMessage.eventName,
+                                @"data":eventMessage.data
+                                };
+        [self sendEventWithName:@"onEvent" body:event];
+    }
 }
 
 -(void) pushClientManagerDidChangedServerConnectionState {
