@@ -1,7 +1,7 @@
 ## History
 
 ### v1.0.3 (10/11/2018)
-- Update android bridge version to v2.13.3
+- Update chabok android SDK version to v2.13.3
 
 ### v1.0.2 (6/11/2018)
 - Update android bridge compileSdkVersion to 26
