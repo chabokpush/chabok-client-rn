@@ -313,13 +313,17 @@ RCT_EXPORT_METHOD(track:(NSString *) trackName data:(NSDictionary *) data) {
 
 -(void) pushClientManagerDidReceivedEventMessage:(EventMessage *)eventMessage{
     if (self.bridge) {
-        NSDictionary *event = @{
-                                @"id":eventMessage.id,
-                                @"installationId":eventMessage.deviceId,
-                                @"eventName":eventMessage.eventName,
-                                @"data":eventMessage.data
-                                };
-        [self sendEventWithName:@"onEvent" body:event];
+        NSDictionary *eventMessageDic =  @{
+                                           @"id":eventMessage.id,
+                                           @"installationId":eventMessage.deviceId,
+                                           @"eventName":eventMessage.eventName
+                                           };
+        NSMutableDictionary *eventPayload = [NSMutableDictionary.alloc initWithDictionary:eventMessageDic];
+        if (eventMessage.data) {
+            [eventPayload setObject:eventMessage.data forKey:@"data"];
+        }
+        
+        [self sendEventWithName:@"onEvent" body:[eventPayload copy]];
     }
 }
 

@@ -192,10 +192,12 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
                 response.putString("id", eventMessage.getId());
                 response.putString("eventName", eventMessage.getName());
                 response.putString("installationId", eventMessage.getInstallationId());
-                try {
-                    response.putMap("data", toWritableMap(eventMessage.getData()));
-                } catch (JSONException e) {
-                    e.printStackTrace();
+                if (eventMessage.getData() != null) {
+                    try {
+                        response.putMap("data", toWritableMap(eventMessage.getData()));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 sendEvent("onEvent", response);

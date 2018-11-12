@@ -1,6 +1,7 @@
 buildscript {
     repositories {
         jcenter()
+        google()
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:2.3.3'
@@ -17,6 +18,7 @@ allprojects {
             // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
             url "$rootDir/../node_modules/react-native/android"
         }
+        google()
     }
 }
 apply plugin: 'com.android.library'
@@ -53,5 +55,5 @@ dependencies {
     compile 'com.google.android.gms:play-services-gcm:10.2.6'
 
     compile 'me.leolin:ShortcutBadger:1.1.22@aar'
-    compile 'com.adpdigital.push:chabok-lib:2.13.4'
+    compile 'com.adpdigital.push:chabok-lib:2.14.0'
 }
