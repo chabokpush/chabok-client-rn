@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Debug;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -23,6 +24,7 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.ReadableType;
+import com.facebook.react.bridge.WritableArray;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 import com.google.android.gms.common.ConnectionResult;
@@ -32,6 +34,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.Console;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -159,11 +162,19 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
                 response.putDouble("createdAt", msg.getCreatedAt());
                 response.putDouble("expireAt", msg.getExpireAt());
                 if (msg.getData() != null) {
-                    response.putMap("data", toWritableMap(msg.getData()));
+                    try {
+                        response.putMap("data", toWritableMap(msg.getData()));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 if (msg.getNotification() != null) {
-                    response.putMap("notification", toWritableMap(msg.getNotification()));
+                    try {
+                        response.putMap("notification", toWritableMap(msg.getNotification()));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 //sendEvent("onMessage", response);
@@ -181,35 +192,62 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
                 response.putString("id", eventMessage.getId());
                 response.putString("eventName", eventMessage.getName());
                 response.putString("installationId", eventMessage.getInstallationId());
-                response.putMap("data", toWritableMap(eventMessage.getData()));
+                if (eventMessage.getData() != null) {
+                    try {
+                        response.putMap("data", toWritableMap(eventMessage.getData()));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
 
                 sendEvent("onEvent", response);
             }
         });
     }
 
-    WritableMap toWritableMap(JSONObject json) {
-        WritableMap response = Arguments.createMap();
-        Iterator iter = json.keys();
-        while (iter.hasNext()) {
-            String key = iter.next().toString();
-            try {
-                if (json.get(key) instanceof Integer) {
-                    response.putInt(key, (Integer) json.get(key));
-                } else if (json.get(key) instanceof String) {
-                    response.putString(key, (String) json.get(key));
-                } else if (json.get(key) instanceof JSONObject) {
-                    response.putMap(key, toWritableMap((JSONObject) json.get(key)));
-                } else if (json.get(key) instanceof Double) {
-                    response.putDouble(key, (Double) json.get(key));
-                } else if (json.get(key) instanceof Boolean) {
-                    response.putBoolean(key, (Boolean) json.get(key));
-                }
-            } catch (JSONException e) {
-                // Something went wrong!
+    public static WritableMap toWritableMap(JSONObject jsonObject) throws JSONException {
+        WritableMap writableMap = Arguments.createMap();
+        Iterator iterator = jsonObject.keys();
+        while(iterator.hasNext()) {
+            String key = (String) iterator.next();
+            Object value = jsonObject.get(key);
+            if (value instanceof Float || value instanceof Double) {
+                writableMap.putDouble(key, jsonObject.getDouble(key));
+            } else if (value instanceof Number) {
+                writableMap.putInt(key, jsonObject.getInt(key));
+            } else if (value instanceof String) {
+                writableMap.putString(key, jsonObject.getString(key));
+            } else if (value instanceof JSONObject) {
+                writableMap.putMap(key,toWritableMap(jsonObject.getJSONObject(key)));
+            } else if (value instanceof JSONArray){
+                writableMap.putArray(key, toWritableMap(jsonObject.getJSONArray(key)));
+            } else if (value == JSONObject.NULL){
+                writableMap.putNull(key);
             }
         }
-        return response;
+
+        return writableMap;
+    }
+
+    public static WritableArray toWritableMap(JSONArray jsonArray) throws JSONException {
+        WritableArray writableArray = Arguments.createArray();
+        for(int i=0; i < jsonArray.length(); i++) {
+            Object value = jsonArray.get(i);
+            if (value instanceof Float || value instanceof Double) {
+                writableArray.pushDouble(jsonArray.getDouble(i));
+            } else if (value instanceof Number) {
+                writableArray.pushInt(jsonArray.getInt(i));
+            } else if (value instanceof String) {
+                writableArray.pushString(jsonArray.getString(i));
+            } else if (value instanceof JSONObject) {
+                writableArray.pushMap(toWritableMap(jsonArray.getJSONObject(i)));
+            } else if (value instanceof JSONArray){
+                writableArray.pushArray(toWritableMap(jsonArray.getJSONArray(i)));
+            } else if (value == JSONObject.NULL){
+                writableArray.pushNull();
+            }
+        }
+        return writableArray;
     }
 
     private void attachChabokClient() {

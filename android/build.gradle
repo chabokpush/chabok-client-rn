@@ -53,5 +53,5 @@ dependencies {
     compile 'com.google.android.gms:play-services-gcm:10.2.6'
 
     compile 'me.leolin:ShortcutBadger:1.1.22@aar'
-    compile 'com.adpdigital.push:chabok-lib:2.13.3'
+    compile 'com.adpdigital.push:chabok-lib:2.14.0'
 }
