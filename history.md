@@ -1,7 +1,8 @@
 ## History
 
 ### v1.0.4 (10/11/2018)
-- Update Chabok android SDK version to [v2.13.4](https://github.com/chabokpush/chabok-client-android/releases/tag/v2.13.4)
+- Update Chabok android SDK version to [v2.14.0](https://github.com/chabokpush/chabok-client-android/releases/tag/v2.14.0)
+- Update Chabok iOS SDK version to [v1.18.0](https://github.com/chabokpush/chabok-client-android/releases/tag/v1.18.0)
 - Fix promise reject for calling `getUserId` and `getInstallationId`
 
 ### v1.0.3 (10/11/2018)
