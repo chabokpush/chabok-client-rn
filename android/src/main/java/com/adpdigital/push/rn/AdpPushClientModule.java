@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.adpdigital.push.AdpPushClient;
+import com.adpdigital.push.AppState;
 import com.adpdigital.push.Callback;
 import com.adpdigital.push.ConnectionStatus;
 import com.adpdigital.push.EventMessage;
@@ -378,6 +379,15 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
         }
     }
 
+    public void onEvent(AppState state){
+        if (state == AppState.REGISTERED){
+            WritableMap params = Arguments.createMap();
+
+            params.putBoolean("isRegister",true);
+            sendEvent("onRegister",params);
+        }
+    }
+
     @ReactMethod
     public void setDevelopment(Boolean devMode) {
         chabok.setDevelopment(devMode);
@@ -538,7 +548,7 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
     }
 
     @ReactMethod
-    public void subscribeEvent(String eventName, final Promise promise) {
+    public void subscribeEvent(final String eventName, final Promise promise) {
         if (TextUtils.isEmpty(eventName)) {
             promise.reject(new IllegalArgumentException("eventName parameter is null or empty"));
             return;
@@ -547,17 +557,25 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
             @Override
             public void onSuccess(Object value) {
                 promise.resolve(true);
+                WritableMap params = Arguments.createMap();
+
+                params.putString("name",eventName);
+                sendEvent("onSubscribe", params);
             }
 
             @Override
             public void onFailure(Throwable throwable) {
                 promise.reject(throwable);
+                WritableMap params = Arguments.createMap();
+
+                params.putString("error",throwable.getMessage());
+                sendEvent("onSubscribe", params);
             }
         });
     }
 
     @ReactMethod
-    public void subscribeEvent(String eventName, String installationId, final Promise promise) {
+    public void subscribeEvent(final String eventName, String installationId, final Promise promise) {
         if (TextUtils.isEmpty(eventName)) {
             promise.reject(new IllegalArgumentException("eventName parameter is null or empty"));
             return;
@@ -569,18 +587,26 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
                 @Override
                 public void onSuccess(Object value) {
                     promise.resolve(true);
+                    WritableMap params = Arguments.createMap();
+
+                    params.putString("name",eventName);
+                    sendEvent("onSubscribe", params);
                 }
 
                 @Override
                 public void onFailure(Throwable throwable) {
                     promise.reject(throwable);
+                    WritableMap params = Arguments.createMap();
+
+                    params.putString("error",throwable.getMessage());
+                    sendEvent("onSubscribe", params);
                 }
             });
         }
     }
 
     @ReactMethod
-    public void subscribe(String channel, final Promise promise) {
+    public void subscribe(final String channel, final Promise promise) {
         if (TextUtils.isEmpty(channel)) {
             promise.reject(new IllegalArgumentException("channel parameter is null or empty"));
             return;
@@ -589,17 +615,25 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
             @Override
             public void onSuccess(Object value) {
                 promise.resolve(true);
+                WritableMap params = Arguments.createMap();
+
+                params.putString("name",channel);
+                sendEvent("onSubscribe", params);
             }
 
             @Override
             public void onFailure(Throwable throwable) {
                 promise.reject(throwable);
+                WritableMap params = Arguments.createMap();
+
+                params.putString("error",throwable.getMessage());
+                sendEvent("onSubscribe", params);
             }
         });
     }
 
     @ReactMethod
-    public void unSubscribe(String channel, final Promise promise) {
+    public void unSubscribe(final String channel, final Promise promise) {
         if (TextUtils.isEmpty(channel)) {
             promise.reject(new IllegalArgumentException("channel parameter is null or empty"));
             return;
@@ -608,17 +642,25 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
             @Override
             public void onSuccess(Object value) {
                 promise.resolve(true);
+                WritableMap params = Arguments.createMap();
+
+                params.putString("name",channel);
+                sendEvent("onUnsubscribe", params);
             }
 
             @Override
             public void onFailure(Throwable throwable) {
                 promise.reject(throwable);
+                WritableMap params = Arguments.createMap();
+
+                params.putString("error",throwable.getMessage());
+                sendEvent("onUnsubscribe", params);
             }
         });
     }
 
     @ReactMethod
-    public void unSubscribeEvent(String eventName, final Promise promise) {
+    public void unSubscribeEvent(final String eventName, final Promise promise) {
         if (TextUtils.isEmpty(eventName)) {
             promise.reject(new IllegalArgumentException("eventName parameter is null or empty"));
             return;
@@ -628,17 +670,25 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
             @Override
             public void onSuccess(Object value) {
                 promise.resolve(true);
+                WritableMap params = Arguments.createMap();
+
+                params.putString("name",eventName);
+                sendEvent("onUnsubscribe", params);
             }
 
             @Override
             public void onFailure(Throwable throwable) {
                 promise.reject(throwable);
+                WritableMap params = Arguments.createMap();
+
+                params.putString("error",throwable.getMessage());
+                sendEvent("onUnsubscribe", params);
             }
         });
     }
 
     @ReactMethod
-    public void unSubscribeEvent(String eventName, String installationId, final Promise promise) {
+    public void unSubscribeEvent(final String eventName, String installationId, final Promise promise) {
         if (TextUtils.isEmpty(eventName)) {
             promise.reject(new IllegalArgumentException("eventName parameter is null or empty"));
             return;
@@ -650,11 +700,19 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
                 @Override
                 public void onSuccess(Object value) {
                     promise.resolve(true);
+                    WritableMap params = Arguments.createMap();
+
+                    params.putString("name",eventName);
+                    sendEvent("onUnsubscribe", params);
                 }
 
                 @Override
                 public void onFailure(Throwable throwable) {
                     promise.reject(throwable);
+                    WritableMap params = Arguments.createMap();
+
+                    params.putString("error",throwable.getMessage());
+                    sendEvent("onUnsubscribe", params);
                 }
             });
         }

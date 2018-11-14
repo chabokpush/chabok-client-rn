@@ -30,14 +30,12 @@ RCT_EXPORT_METHOD(init:(NSString *) appId
                   rejecter:(RCTPromiseRejectBlock)reject) {
     NSArray *appIds = [appId componentsSeparatedByString:@"/"];
     self.appId = appIds.firstObject;
-    [PushClientManager.defaultManager addDelegate:self];
-    [PushClientManager.defaultManager application:UIApplication.sharedApplication
-                    didFinishLaunchingWithOptions:nil];
     
     BOOL state = [PushClientManager.defaultManager registerApplication:self.appId
                                                                 apiKey:apiKey
                                                               userName:username
                                                               password:password];
+  
     if (state) {
         RCTLogInfo(@"Initilized sucessfully");
         resolve(@{@"result":@"Initilized sucessfully"});
@@ -50,6 +48,9 @@ RCT_EXPORT_METHOD(init:(NSString *) appId
                                                            }];
         reject(@"400",@"Could not init chabok parameters",error);
     }
+    [PushClientManager.defaultManager addDelegate:self];
+    [PushClientManager.defaultManager application:UIApplication.sharedApplication
+                  didFinishLaunchingWithOptions:nil];
 }
 
 RCT_EXPORT_METHOD(initializeApp:(NSString *) appName options:(NSDictionary *) options cbk:(RCTResponseSenderBlock) cbk) {
@@ -58,13 +59,9 @@ RCT_EXPORT_METHOD(initializeApp:(NSString *) appName options:(NSDictionary *) op
         RCTLogInfo(@"Option parameter is null");
         cbk(@[@{@"result":@"Option parameter is null"}]);
     } else {
-        
         BOOL devMode = [[options valueForKey:@"isDev"] boolValue];
-        
         [PushClientManager setDevelopment:devMode];
-        PushClientManager.defaultManager.enableLog = YES;
-        [PushClientManager.defaultManager addDelegate:self];
-        
+
         NSString *appId = [options valueForKey:@"appId"];
         NSString *apiKey = [options valueForKey:@"apiKey"];
         NSString *username = [options valueForKey:@"username"];
@@ -80,6 +77,7 @@ RCT_EXPORT_METHOD(initializeApp:(NSString *) appName options:(NSDictionary *) op
            } rejecter:^(NSString *code, NSString *message, NSError *error) {
                cbk(@[@{@"error":message}]);
            }];
+      
     }
 }
 
@@ -121,14 +119,23 @@ RCT_EXPORT_METHOD(register:(NSString *)userId channels:(NSArray *) channels) {
             chnl = channels;
         }
         BOOL state = [PushClientManager.defaultManager registerUser:userId
-                                                           channels:chnl];
+                                                           channels:chnl registrationHandler:^(BOOL isRegistered, NSString *userId, NSError *error) {
+                                                             RCTLogInfo(@"isRegistered : %d userId : %@ error : %@",isRegistered, userId, error );
+                                                             if (error) {
+                                                               [self sendEventWithName:@"onRegister" body:@{@"error":error,
+                                                                                                            @"isRegister":@(NO)
+                                                                                                            }];
+                                                             } else {
+                                                               [self sendEventWithName:@"onRegister" body:@{@"isRegister":@(isRegistered)}];
+                                                             }
+                                                           }];
         if (state) {
-            RCTLogInfo(@"@@@@@@@@@@@@@@@@@ Registered to chabok with channels");
+            RCTLogInfo(@"Registered to chabok with channels");
         } else {
-            RCTLogInfo(@"@@@@@@@@@@@@@@@@@ Fail to registered to chabok");
+            RCTLogInfo(@"Fail to registered to chabok");
         }
     } else {
-        RCTLogInfo(@"@@@@@@@@@@@@@@@@@ Could not register userId to chabok with channels");
+        RCTLogInfo(@"Could not register userId to chabok with channels");
     }
 }
 
@@ -298,7 +305,7 @@ RCT_EXPORT_METHOD(track:(NSString *) trackName data:(NSDictionary *) data) {
 
 #pragma mark - chabok delegate methods
 - (NSArray<NSString *> *)supportedEvents{
-    return @[@"connectionStatus",@"onEvent",@"onMessage", @"ChabokMessageReceived"];
+    return @[@"connectionStatus",@"onEvent",@"onMessage", @"ChabokMessageReceived", @"onSubscribe", @"onUnsubscribe", @"onRegister"];
 }
 
 -(void) pushClientManagerDidReceivedMessage:(PushClientMessage *)message{
@@ -342,6 +349,20 @@ RCT_EXPORT_METHOD(track:(NSString *) trackName data:(NSDictionary *) data) {
     }
     
     [self sendEventWithName:@"connectionStatus" body:connectionState];
+}
+
+-(void) pushClientManagerDidSubscribed:(NSString *)channel{
+  [self sendEventWithName:@"onSubscribe" body:@{@"name":channel}];
+}
+-(void) pushClientManagerDidFailInSubscribe:(NSError *)error{
+  [self sendEventWithName:@"onSubscribe" body:@{@"error":error}];
+}
+
+-(void) pushClientManagerDidUnsubscribed:(NSString *)channel{
+  [self sendEventWithName:@"onUnsubscribe" body:@{@"name":channel}];
+}
+-(void) pushClientManagerDidFailInUnsubscribe:(NSError *)error{
+  [self sendEventWithName:@"onUnsubscribe" body:@{@"error":error}];
 }
 
 - (void)invalidate {
