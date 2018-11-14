@@ -1,5 +1,8 @@
 ## History
 
+### v1.1.1 (14/11/2018)
+- Add `onSubscribe` and `onUnsubcribe` listener for getting subscribe and unsubscribe status.
+
 ### v1.1.0 (12/11/2018)
 - Update Chabok android SDK version to [v2.14.0](https://github.com/chabokpush/chabok-client-android/releases/tag/v2.14.0)
 - Update Chabok iOS SDK version to [v1.18.0](https://github.com/chabokpush/chabok-client-ios/releases/tag/v1.18.0)
