@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.adpdigital.push.AdpPushClient;
+import com.adpdigital.push.AppState;
 import com.adpdigital.push.Callback;
 import com.adpdigital.push.ConnectionStatus;
 import com.adpdigital.push.EventMessage;
@@ -375,6 +376,15 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
             promise.reject("500", "The userId is null, You didn't register yet!");
         } else {
             promise.resolve(userId);
+        }
+    }
+
+    public void onEvent(AppState state){
+        if (state == AppState.REGISTERED){
+            WritableMap params = Arguments.createMap();
+
+            params.putBoolean("isRegister",true);
+            sendEvent("onRegister",params);
         }
     }
 
