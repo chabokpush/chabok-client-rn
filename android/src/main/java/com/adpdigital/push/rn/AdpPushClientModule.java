@@ -104,7 +104,6 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
             );
 
             chabok.setDevelopment(options.getBoolean("isDev"));
-            chabok.enableDeliveryTopic();
             attachChabokClient();
         }
         }
