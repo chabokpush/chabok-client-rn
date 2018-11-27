@@ -61,7 +61,7 @@ RCT_EXPORT_METHOD(initializeApp:(NSDictionary *) options
         RCTLogInfo(@"Option parameter is null");
         resolve(@{@"result":@"Option parameter is null"});
     } else {
-        BOOL devMode = [[options valueForKey:@"isDev"] boolValue];
+        BOOL devMode = [[options valueForKey:@"devMode"] boolValue];
         [PushClientManager setDevelopment:devMode];
 
         NSString *appId = [options valueForKey:@"appId"];
