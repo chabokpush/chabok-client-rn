@@ -83,9 +83,16 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
     }
 
     @ReactMethod
-    public void initializeApp(String appName, ReadableMap options, com.facebook.react.bridge.Callback callback) {
-
+    public void initializeApp(ReadableMap options, Promise promise) {
         activityClass = getMainActivityClass();
+        if (activityClass != null) {
+            WritableMap response = Arguments.createMap();
+            response.putString("result", "success");
+            promise.resolve(response);
+        } else { // TODO improve sending error or mechanism
+            promise.reject("500","Activity class is null", new IllegalArgumentException("Activity class is null"));
+        }
+
         if (chabok == null) {
             chabok = AdpPushClient.init(
                     getReactApplicationContext(),
@@ -100,17 +107,7 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
             chabok.enableDeliveryTopic();
             attachChabokClient();
         }
-
-        if (activityClass != null) {
-            WritableMap response = Arguments.createMap();
-            response.putString("result", "success");
-            callback.invoke(response);
-        } else { // TODO improve sending error or mechanism
-            WritableMap response = Arguments.createMap();
-            response.putString("result", "failed");
-            callback.invoke(response);
         }
-    }
 
     @ReactMethod
     public void init(String appId, String apiKey, String username, String password, Promise promise) {
