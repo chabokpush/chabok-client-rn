@@ -103,10 +103,10 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
                     options.getString("password")
             );
 
-            chabok.setDevelopment(options.getBoolean("isDev"));
+            chabok.setDevelopment(options.getBoolean("devMode"));
             attachChabokClient();
         }
-        }
+    }
 
     @ReactMethod
     public void init(String appId, String apiKey, String username, String password, Promise promise) {
