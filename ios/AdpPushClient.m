@@ -53,11 +53,13 @@ RCT_EXPORT_METHOD(init:(NSString *) appId
                   didFinishLaunchingWithOptions:nil];
 }
 
-RCT_EXPORT_METHOD(initializeApp:(NSString *) appName options:(NSDictionary *) options cbk:(RCTResponseSenderBlock) cbk) {
+RCT_EXPORT_METHOD(initializeApp:(NSDictionary *) options
+                  promise:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
     
     if(options == nil || [options isEqual:[NSNull null]]){
         RCTLogInfo(@"Option parameter is null");
-        cbk(@[@{@"result":@"Option parameter is null"}]);
+        resolve(@{@"result":@"Option parameter is null"});
     } else {
         BOOL devMode = [[options valueForKey:@"isDev"] boolValue];
         [PushClientManager setDevelopment:devMode];
@@ -72,11 +74,8 @@ RCT_EXPORT_METHOD(initializeApp:(NSString *) appName options:(NSDictionary *) op
             apiKey:apiKey
           username:username
           password:password
-           promise:^(id result) {
-               cbk(result);
-           } rejecter:^(NSString *code, NSString *message, NSError *error) {
-               cbk(@[@{@"error":message}]);
-           }];
+           promise:resolve
+          rejecter:reject];
       
     }
 }
