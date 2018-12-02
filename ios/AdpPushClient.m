@@ -26,8 +26,11 @@ RCT_EXPORT_METHOD(init:(NSString *) appId
                   apiKey:(NSString *) apiKey
                   username:(NSString *) username
                   password:(NSString *) password
+                  devMode:(BOOL) devMode
                   promise:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
+  
+    [PushClientManager setDevelopment:devMode];
     NSArray *appIds = [appId componentsSeparatedByString:@"/"];
     self.appId = appIds.firstObject;
     
@@ -66,19 +69,18 @@ RCT_EXPORT_METHOD(initializeApp:(NSDictionary *) options
                                                            }];
         reject(@"400",@"Could not init chabok parameters",error);
     } else {
-        BOOL devMode = [[options valueForKey:@"devMode"] boolValue];
-        [PushClientManager setDevelopment:devMode];
-        
         NSString *appId = [options valueForKey:@"appId"];
         NSString *apiKey = [options valueForKey:@"apiKey"];
         NSString *username = [options valueForKey:@"username"];
         NSString *password = [options valueForKey:@"password"];
-        
+        BOOL devMode = [[options valueForKey:@"devMode"] boolValue];
         NSArray *appIds = [appId componentsSeparatedByString:@"/"];
+      
         [self init:appIds.firstObject
             apiKey:apiKey
           username:username
           password:password
+           devMode:devMode
            promise:resolve
           rejecter:reject];
         
