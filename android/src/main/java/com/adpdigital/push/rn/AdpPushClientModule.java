@@ -101,11 +101,10 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
                     options.getString("username"),
                     options.getString("password")
             );
-
-            chabok.setDevelopment(options.getBoolean("devMode"));
-            chabok.addListener(getReactApplicationContext());
-            attachChabokClient();
         }
+        chabok.setDevelopment(options.getBoolean("devMode"));
+        chabok.addListener(getReactApplicationContext());
+        attachChabokClient();
 
         if (activityClass != null) {
             WritableMap response = Arguments.createMap();
@@ -135,12 +134,11 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
                     username,
                     password
             );
-
-            chabok.setDevelopment(devMode);
-            chabok.addListener(getReactApplicationContext());
-            attachChabokClient();
         }
-        
+        chabok.setDevelopment(devMode);
+        chabok.addListener(getReactApplicationContext());
+        attachChabokClient();
+
         if (activityClass != null) {
             WritableMap response = Arguments.createMap();
             response.putString("result", "success");
