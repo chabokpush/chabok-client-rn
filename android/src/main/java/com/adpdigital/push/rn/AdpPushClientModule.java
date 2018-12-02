@@ -103,7 +103,7 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
             );
         }
         chabok.setDevelopment(options.getBoolean("devMode"));
-        chabok.addListener(getReactApplicationContext());
+        chabok.addListener(this);
         attachChabokClient();
 
         if (activityClass != null) {
@@ -136,7 +136,7 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
             );
         }
         chabok.setDevelopment(devMode);
-        chabok.addListener(getReactApplicationContext());
+        chabok.addListener(this);
         attachChabokClient();
 
         if (activityClass != null) {
