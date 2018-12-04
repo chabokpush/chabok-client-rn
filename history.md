@@ -1,5 +1,19 @@
 ## History
 
+### v1.2.0 (2/12/2018)
+
+#### Changes:
+
+- Fix in changing Chabok environment.
+
+#### Upgrade note:
+
+- For change Chabok environments use `devMode` parameter in `init` method.
+	`init(APP_ID, API_KEY, USERNAME, PASSWORD, DEVMODE)`
+- Remove `appName` parameter in `initializeApp` method.
+	`initializeApp(options)`
+- The `setDevelopment` method is not available anymore. Use `devMode` parameter in `init` or `devMode` key in `initializeApp` method instead
+
 ### v1.1.1 (14/11/2018)
 - Add `onSubscribe` and `onUnsubscribe` listener for getting subscribe and unsubscribe status.
 

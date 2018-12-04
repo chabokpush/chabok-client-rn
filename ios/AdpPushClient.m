@@ -26,8 +26,11 @@ RCT_EXPORT_METHOD(init:(NSString *) appId
                   apiKey:(NSString *) apiKey
                   username:(NSString *) username
                   password:(NSString *) password
+                  devMode:(BOOL) devMode
                   promise:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
+  
+    [PushClientManager setDevelopment:devMode];
     NSArray *appIds = [appId componentsSeparatedByString:@"/"];
     self.appId = appIds.firstObject;
     
@@ -35,7 +38,7 @@ RCT_EXPORT_METHOD(init:(NSString *) appId
                                                                 apiKey:apiKey
                                                               userName:username
                                                               password:password];
-  
+    
     if (state) {
         RCTLogInfo(@"Initilized sucessfully");
         resolve(@{@"result":@"Initilized sucessfully"});
@@ -50,34 +53,37 @@ RCT_EXPORT_METHOD(init:(NSString *) appId
     }
     [PushClientManager.defaultManager addDelegate:self];
     [PushClientManager.defaultManager application:UIApplication.sharedApplication
-                  didFinishLaunchingWithOptions:nil];
+                    didFinishLaunchingWithOptions:nil];
 }
 
-RCT_EXPORT_METHOD(initializeApp:(NSString *) appName options:(NSDictionary *) options cbk:(RCTResponseSenderBlock) cbk) {
+RCT_EXPORT_METHOD(initializeApp:(NSDictionary *) options
+                  promise:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
     
     if(options == nil || [options isEqual:[NSNull null]]){
         RCTLogInfo(@"Option parameter is null");
-        cbk(@[@{@"result":@"Option parameter is null"}]);
+        NSError *error = [[NSError alloc] initWithDomain:NSLocalizedDescriptionKey
+                                                    code:400
+                                                userInfo:@{
+                                                           @"result":@"Could not init chabok parameters"
+                                                           }];
+        reject(@"400",@"Could not init chabok parameters",error);
     } else {
-        BOOL devMode = [[options valueForKey:@"isDev"] boolValue];
-        [PushClientManager setDevelopment:devMode];
-
         NSString *appId = [options valueForKey:@"appId"];
         NSString *apiKey = [options valueForKey:@"apiKey"];
         NSString *username = [options valueForKey:@"username"];
         NSString *password = [options valueForKey:@"password"];
-        
+        BOOL devMode = [[options valueForKey:@"devMode"] boolValue];
         NSArray *appIds = [appId componentsSeparatedByString:@"/"];
+      
         [self init:appIds.firstObject
             apiKey:apiKey
           username:username
           password:password
-           promise:^(id result) {
-               cbk(result);
-           } rejecter:^(NSString *code, NSString *message, NSError *error) {
-               cbk(@[@{@"error":message}]);
-           }];
-      
+           devMode:devMode
+           promise:resolve
+          rejecter:reject];
+        
     }
 }
 
@@ -120,14 +126,14 @@ RCT_EXPORT_METHOD(register:(NSString *)userId channels:(NSArray *) channels) {
         }
         BOOL state = [PushClientManager.defaultManager registerUser:userId
                                                            channels:chnl registrationHandler:^(BOOL isRegistered, NSString *userId, NSError *error) {
-                                                             RCTLogInfo(@"isRegistered : %d userId : %@ error : %@",isRegistered, userId, error );
-                                                             if (error) {
-                                                               [self sendEventWithName:@"onRegister" body:@{@"error":error,
-                                                                                                            @"isRegister":@(NO)
-                                                                                                            }];
-                                                             } else {
-                                                               [self sendEventWithName:@"onRegister" body:@{@"isRegister":@(isRegistered)}];
-                                                             }
+                                                               RCTLogInfo(@"isRegistered : %d userId : %@ error : %@",isRegistered, userId, error );
+                                                               if (error) {
+                                                                   [self sendEventWithName:@"onRegister" body:@{@"error":error,
+                                                                                                                @"isRegister":@(NO)
+                                                                                                                }];
+                                                               } else {
+                                                                   [self sendEventWithName:@"onRegister" body:@{@"isRegister":@(isRegistered)}];
+                                                               }
                                                            }];
         if (state) {
             RCTLogInfo(@"Registered to chabok with channels");
@@ -352,17 +358,17 @@ RCT_EXPORT_METHOD(track:(NSString *) trackName data:(NSDictionary *) data) {
 }
 
 -(void) pushClientManagerDidSubscribed:(NSString *)channel{
-  [self sendEventWithName:@"onSubscribe" body:@{@"name":channel}];
+    [self sendEventWithName:@"onSubscribe" body:@{@"name":channel}];
 }
 -(void) pushClientManagerDidFailInSubscribe:(NSError *)error{
-  [self sendEventWithName:@"onSubscribe" body:@{@"error":error}];
+    [self sendEventWithName:@"onSubscribe" body:@{@"error":error}];
 }
 
 -(void) pushClientManagerDidUnsubscribed:(NSString *)channel{
-  [self sendEventWithName:@"onUnsubscribe" body:@{@"name":channel}];
+    [self sendEventWithName:@"onUnsubscribe" body:@{@"name":channel}];
 }
 -(void) pushClientManagerDidFailInUnsubscribe:(NSError *)error{
-  [self sendEventWithName:@"onUnsubscribe" body:@{@"error":error}];
+    [self sendEventWithName:@"onUnsubscribe" body:@{@"error":error}];
 }
 
 - (void)invalidate {
