@@ -16,6 +16,7 @@
 
 ### v1.1.1 (14/11/2018)
 - Add `onSubscribe` and `onUnsubscribe` listener for getting subscribe and unsubscribe status.
+- Add `onRegister` listener to check user registration status
 
 ### v1.1.0 (12/11/2018)
 - Update Chabok android SDK version to [v2.14.0](https://github.com/chabokpush/chabok-client-android/releases/tag/v2.14.0)
