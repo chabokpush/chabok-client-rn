@@ -1,5 +1,12 @@
 ## History
 
+### v1.2.1 (06/03/2019)
+
+#### Changes:
+
+- Update Chabok iOS SDK ([v1.18.1](https://github.com/chabokpush/chabok-client-ios/releases/tag/v1.18.1))
+- Update Chabok android SDK ([v2.14.2](https://github.com/chabokpush/chabok-client-android/releases/tag/v2.14.2))
+
 ### v1.2.0 (2/12/2018)
 
 #### Changes:
