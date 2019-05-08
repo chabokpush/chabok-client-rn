@@ -318,6 +318,11 @@ RCT_EXPORT_METHOD(track:(NSString *) trackName data:(NSDictionary *) data) {
     [PushClientManager.defaultManager track:trackName data:data];
 }
 
+#pragma mark - deeplink
+RCT_EXPORT_METHOD(appWillOpenUrl:(NSURL *) url) {
+    [PushClientManager.defaultManager appWillOpenUrl:url];
+}
+
 #pragma mark - chabok delegate methods
 - (NSArray<NSString *> *)supportedEvents{
     return @[@"connectionStatus",@"onEvent",@"onMessage", @"ChabokMessageReceived", @"onSubscribe", @"onUnsubscribe", @"onRegister"];
