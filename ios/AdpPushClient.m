@@ -318,6 +318,11 @@ RCT_EXPORT_METHOD(track:(NSString *) trackName data:(NSDictionary *) data) {
     [PushClientManager.defaultManager track:trackName data:data];
 }
 
+#pragma mark - default tracker
+RCT_EXPORT_METHOD(setDefaultTracker:(NSString *) defaultTracker) {
+    [PushClientManager.defaultManager setDefaultTracker:defaultTracker];;
+}
+
 #pragma mark - userInfo
 RCT_EXPORT_METHOD(setUserInfo:(NSDictionary *) userInfo) {
     [PushClientManager.defaultManager setUserInfo:userInfo];;

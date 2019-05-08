@@ -41,6 +41,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.Console;
+import java.net.URI;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -810,7 +811,15 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
             Throwable throwable = new Throwable("SDK not initialized");
             promise.reject(throwable);
         }
+    }
+
+    @ReactMethod
+    public void setDefaultTracker(final String defaultTracker){
+        if (chabok != null){
+            chabok.setDefaultTracker(defaultTracker);
         }
+    }
+
     @ReactMethod
     public void appWillOpenUrl(final Uri uri){
         if (chabok != null){
