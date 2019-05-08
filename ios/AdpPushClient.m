@@ -325,7 +325,7 @@ RCT_EXPORT_METHOD(appWillOpenUrl:(NSURL *) url) {
 
 #pragma mark - chabok delegate methods
 - (NSArray<NSString *> *)supportedEvents{
-    return @[@"connectionStatus",@"onEvent",@"onMessage", @"ChabokMessageReceived", @"onSubscribe", @"onUnsubscribe", @"onRegister"];
+    return @[@"connectionStatus",@"onEvent",@"onMessage", @"ChabokMessageReceived", @"onSubscribe", @"onUnsubscribe", @"onRegister", @"notificationOpened"];
 }
 
 -(void) pushClientManagerDidReceivedMessage:(PushClientMessage *)message{
@@ -387,6 +387,56 @@ RCT_EXPORT_METHOD(appWillOpenUrl:(NSURL *) url) {
 
 - (void)invalidate {
     self.appId = nil;
+}
+
+-(void) userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler{
+    NSDictionary *payload = response.notification.request.content.userInfo;
+    
+    NSString *actionType;
+    NSString *actionUrl;
+    NSString *actionId = response.actionIdentifier;
+    NSArray *actions = [payload valueForKey:@"actions"];
+    NSString *clickUrl = [payload valueForKey:@"clickUrl"];
+    
+    if ([actionId containsString:UNNotificationDismissActionIdentifier]) {
+        actionType = @"DISMISSED";
+        actionId = nil;
+    } else if ([actionId containsString:UNNotificationDefaultActionIdentifier]) {
+        actionType = @"OPENED";
+        actionId = nil;
+    } else {
+        actionType = @"ACTION_TAKEN";
+        
+        actionUrl = [self getActionUrlFrom:actionId actions:actions];
+    }
+    
+    NSMutableDictionary *notificationData = [NSMutableDictionary new];
+    [notificationData setObject:actionType forKey:@"actionType"];
+    
+    if (actionId) {
+        [notificationData setObject:actionId forKey:@"actionId"];
+    }
+    
+    if (clickUrl) {
+        [notificationData setObject:clickUrl forKey:@"actionUrl"];
+    } else if (actionUrl){
+        [notificationData setObject:actionUrl forKey:@"actionUrl"];
+    }
+    
+    [notificationData setObject:payload forKey:@"message"];
+    
+    [self sendEventWithName:@"notificationOpened" body:notificationData];
+}
+
+- (NSString *)getActionUrlFrom:(NSString *)actionId actions:(NSArray *)actions {
+    NSString *actionUrl;
+    for (NSDictionary *action in actions) {
+        NSString *acId = [action valueForKey:@"id"];
+        if ([acId containsString:actionId]) {
+            actionUrl = [action valueForKey:@"url"];
+        }
+    }
+    return actionUrl;
 }
 
 @end

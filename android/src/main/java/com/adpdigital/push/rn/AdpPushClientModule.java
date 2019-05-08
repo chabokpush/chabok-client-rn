@@ -4,7 +4,9 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Debug;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
 import android.util.Log;
@@ -12,8 +14,11 @@ import android.util.Log;
 import com.adpdigital.push.AdpPushClient;
 import com.adpdigital.push.AppState;
 import com.adpdigital.push.Callback;
+import com.adpdigital.push.ChabokNotification;
+import com.adpdigital.push.ChabokNotificationAction;
 import com.adpdigital.push.ConnectionStatus;
 import com.adpdigital.push.EventMessage;
+import com.adpdigital.push.NotificationHandler;
 import com.adpdigital.push.PushMessage;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -104,6 +109,63 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
         }
         chabok.setDevelopment(options.getBoolean("devMode"));
         chabok.addListener(this);
+
+        chabok.addNotificationHandler(new NotificationHandler(){
+            public Class getActivityClass(ChabokNotification message) {
+                return activityClass;
+            }
+
+            public boolean buildNotification(ChabokNotification message, NotificationCompat.Builder builder) {
+                return true;
+            }
+
+            public boolean notificationOpened(ChabokNotification message, ChabokNotificationAction notificationAction) {
+                WritableMap response = Arguments.createMap();
+                if (notificationAction.actionID != null){
+                    response.putString("actionID", notificationAction.actionID);
+                }
+                if (notificationAction.actionUrl != null){
+                    response.putString("actionUrl", notificationAction.actionUrl);
+                }
+
+                if (notificationAction.type == ChabokNotificationAction.a.Opened){
+                    response.putString("type", "opened");
+                } else if (notificationAction.type == ChabokNotificationAction.a.Dismissed) {
+                    response.putString("type", "dismissed");
+                } else if (notificationAction.type == ChabokNotificationAction.a.ActionTaken) {
+                    response.putString("type", "ActionTaken");
+                }
+
+                PushMessage msg = message.getMessage();
+                WritableMap msgMap = Arguments.createMap();
+
+                msgMap.putString("alertText", msg.getAlertText());
+                msgMap.putString("alertTitle", msg.getAlertTitle());
+                msgMap.putString("body", msg.getBody());
+                msgMap.putString("intentType", msg.getIntentType());
+                msgMap.putString("senderId", msg.getSenderId());
+                msgMap.putString("sentId", msg.getSentId());
+                msgMap.putString("id", msg.getId());
+                msgMap.putString("sound", msg.getSound());
+                msgMap.putString("channel", msg.getChannel());
+                msgMap.putDouble("receivedAt", msg.getReceivedAt());
+                msgMap.putDouble("createdAt", msg.getCreatedAt());
+                msgMap.putDouble("expireAt", msg.getExpireAt());
+
+                try {
+                    msgMap.putMap("data", toWritableMap(msg.getData()));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                response.putMap("message", msgMap);
+
+                sendEvent("notificationOpened",response);
+
+                return false;
+            }
+        });
+
         attachChabokClient();
 
         if (activityClass != null) {
