@@ -50,8 +50,7 @@ dependencies {
     compile "com.facebook.react:react-native:+"  // From node_modules
     compile 'com.android.support:appcompat-v7:26.0.2'
     testCompile 'junit:junit:4.12'
-    compile 'com.google.android.gms:play-services-gcm:10.2.6'
 
     compile 'me.leolin:ShortcutBadger:1.1.22@aar'
-    compile 'com.adpdigital.push:chabok-lib:2.14.2'
+    compile 'com.adpdigital.push:chabok-lib:2.16.0'
 }
