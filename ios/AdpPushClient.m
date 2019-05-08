@@ -318,6 +318,17 @@ RCT_EXPORT_METHOD(track:(NSString *) trackName data:(NSDictionary *) data) {
     [PushClientManager.defaultManager track:trackName data:data];
 }
 
+#pragma mark - userInfo
+RCT_EXPORT_METHOD(setUserInfo:(NSDictionary *) userInfo) {
+    [PushClientManager.defaultManager setUserInfo:userInfo];;
+}
+
+RCT_EXPORT_METHOD(getUserInfo:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
+    NSDictionary *userInfo = PushClientManager.defaultManager.userInfo;
+    resolve(userInfo);
+}
+
 #pragma mark - deeplink
 RCT_EXPORT_METHOD(appWillOpenUrl:(NSURL *) url) {
     [PushClientManager.defaultManager appWillOpenUrl:url];

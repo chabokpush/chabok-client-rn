@@ -795,6 +795,23 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
     }
 
     @ReactMethod
+    public void setUserInfo(ReadableMap data){
+        if (chabok != null) {
+            HashMap<String, Object> userInfo = new HashMap<String, Object>(toMap(data));
+            chabok.setUserInfo(userInfo);
+        }
+    }
+
+    @ReactMethod
+    public void getUserInfo(final Promise promise) {
+        if (chabok != null) {
+            promise.resolve(chabok.getUserInfo());
+        } else {
+            Throwable throwable = new Throwable("SDK not initialized");
+            promise.reject(throwable);
+        }
+        }
+    @ReactMethod
     public void appWillOpenUrl(final Uri uri){
         if (chabok != null){
             chabok.appWillOpenUrl(uri);
