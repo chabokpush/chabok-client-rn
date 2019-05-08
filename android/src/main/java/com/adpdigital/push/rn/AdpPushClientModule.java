@@ -862,4 +862,68 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
         }
         return array;
     }
+
+    private static Map<String, Object> toMap(ReadableMap readableMap) {
+        Map<String, Object> map = new HashMap<>();
+        ReadableMapKeySetIterator iterator = readableMap.keySetIterator();
+
+        while (iterator.hasNextKey()) {
+            String key = iterator.nextKey();
+            ReadableType type = readableMap.getType(key);
+
+            switch (type) {
+                case Null:
+                    map.put(key, null);
+                    break;
+                case Boolean:
+                    map.put(key, readableMap.getBoolean(key));
+                    break;
+                case Number:
+                    map.put(key, readableMap.getDouble(key));
+                    break;
+                case String:
+                    map.put(key, readableMap.getString(key));
+                    break;
+                case Map:
+                    map.put(key, toMap(readableMap.getMap(key)));
+                    break;
+                case Array:
+                    map.put(key, toArray(readableMap.getArray(key)));
+                    break;
+            }
+        }
+
+        return map;
+    }
+
+    private static Object[] toArray(ReadableArray readableArray) {
+        Object[] array = new Object[readableArray.size()];
+
+        for (int i = 0; i < readableArray.size(); i++) {
+            ReadableType type = readableArray.getType(i);
+
+            switch (type) {
+                case Null:
+                    array[i] = null;
+                    break;
+                case Boolean:
+                    array[i] = readableArray.getBoolean(i);
+                    break;
+                case Number:
+                    array[i] = readableArray.getDouble(i);
+                    break;
+                case String:
+                    array[i] = readableArray.getString(i);
+                    break;
+                case Map:
+                    array[i] = toMap(readableArray.getMap(i));
+                    break;
+                case Array:
+                    array[i] = toArray(readableArray.getArray(i));
+                    break;
+            }
+        }
+
+        return array;
+    }
 }
