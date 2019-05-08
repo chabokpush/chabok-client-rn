@@ -380,6 +380,8 @@ RCT_EXPORT_METHOD(appWillOpenUrl:(NSURL *) url) {
     } else if (PushClientManager.defaultManager.connectionState == PushClientServerDisconnectedState ||
                PushClientManager.defaultManager.connectionState == PushClientServerDisconnectedErrorState) {
         connectionState = @"DISCONNECTED";
+    } else  if (PushClientManager.defaultManager.connectionState == PushClientServerSocketTimeoutState) {
+        connectionState = @"SocketTimeout";
     } else {
         connectionState = @"NOT_INITIALIZED";
     }
