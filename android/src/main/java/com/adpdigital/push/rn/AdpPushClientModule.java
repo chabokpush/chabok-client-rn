@@ -110,6 +110,39 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
         }
         chabok.setDevelopment(options.getBoolean("devMode"));
         chabok.addListener(this);
+        attachChabokClient();
+
+        if (activityClass != null) {
+            WritableMap response = Arguments.createMap();
+            response.putString("result", "success");
+            promise.resolve(response);
+        } else { // TODO improve sending error or mechanism
+            promise.reject("500","Activity class is null", new IllegalArgumentException("Activity class is null"));
+        }
+    }
+
+    @ReactMethod
+    public void init(String appId, String apiKey, String username, String password, boolean devMode, Promise promise) {
+        activityClass = getMainActivityClass();
+
+        try {
+            chabok = AdpPushClient.get();
+        } catch (Exception exc){
+            Log.d(TAG, "Chabok client not initialized");
+        }
+
+        if (chabok == null) {
+            chabok = AdpPushClient.init(
+                    getReactApplicationContext(),
+                    activityClass,
+                    appId,
+                    apiKey,
+                    username,
+                    password
+            );
+        }
+        chabok.setDevelopment(devMode);
+        chabok.addListener(this);
 
         chabok.addNotificationHandler(new NotificationHandler(){
             public Class getActivityClass(ChabokNotification message) {
@@ -167,39 +200,7 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
             }
         });
 
-        attachChabokClient();
 
-        if (activityClass != null) {
-            WritableMap response = Arguments.createMap();
-            response.putString("result", "success");
-            promise.resolve(response);
-        } else { // TODO improve sending error or mechanism
-            promise.reject("500","Activity class is null", new IllegalArgumentException("Activity class is null"));
-        }
-    }
-
-    @ReactMethod
-    public void init(String appId, String apiKey, String username, String password, boolean devMode, Promise promise) {
-        activityClass = getMainActivityClass();
-
-        try {
-            chabok = AdpPushClient.get();
-        } catch (Exception exc){
-            Log.d(TAG, "Chabok client not initialized");
-        }
-
-        if (chabok == null) {
-            chabok = AdpPushClient.init(
-                    getReactApplicationContext(),
-                    activityClass,
-                    appId,
-                    apiKey,
-                    username,
-                    password
-            );
-        }
-        chabok.setDevelopment(devMode);
-        chabok.addListener(this);
         attachChabokClient();
 
         if (activityClass != null) {
