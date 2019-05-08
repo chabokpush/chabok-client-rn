@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Debug;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
@@ -45,6 +46,7 @@ import java.net.URI;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import static com.facebook.react.bridge.UiThreadUtil.runOnUiThread;
 
@@ -170,24 +172,34 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
                     response.putString("type", "ActionTaken");
                 }
 
-                PushMessage msg = message.getMessage();
                 WritableMap msgMap = Arguments.createMap();
 
-                msgMap.putString("alertText", msg.getAlertText());
-                msgMap.putString("alertTitle", msg.getAlertTitle());
-                msgMap.putString("body", msg.getBody());
-                msgMap.putString("intentType", msg.getIntentType());
-                msgMap.putString("senderId", msg.getSenderId());
-                msgMap.putString("sentId", msg.getSentId());
-                msgMap.putString("id", msg.getId());
-                msgMap.putString("sound", msg.getSound());
-                msgMap.putString("channel", msg.getChannel());
-                msgMap.putDouble("receivedAt", msg.getReceivedAt());
-                msgMap.putDouble("createdAt", msg.getCreatedAt());
-                msgMap.putDouble("expireAt", msg.getExpireAt());
+                if (message.getTitle() != null) {
+                    msgMap.putString("title", message.getTitle());
+                }
+                if (message.getId() != null) {
+                    msgMap.putString("id", message.getId());
+                }
+
+                if (message.getText() != null) {
+                    msgMap.putString("body", message.getText());
+                }
+                if (message.getTrackId() != null){
+                    msgMap.putString("trackId", message.getTrackId());
+                }
+                if (message.getTopicName() != null){
+                    msgMap.putString("channel", message.getTopicName());
+                }
+
+                if (message.getSound() != null) {
+                    msgMap.putString("sound", message.getSound());
+                }
 
                 try {
-                    msgMap.putMap("data", toWritableMap(msg.getData()));
+                    Bundle data = message.getExtras();
+                    if (data != null) {
+                        msgMap.putMap("data", toWritableMap(new JSONObject(bundleToJson(data))));
+                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -1021,5 +1033,19 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
         }
 
         return array;
+    }
+
+    private static String bundleToJson(Bundle bundle) {
+        JSONObject json = new JSONObject();
+        Set<String> keys = bundle.keySet();
+        for (String key : keys) {
+            try {
+                json.put(key, bundle.get(key));
+            } catch (JSONException e) {
+
+            }
+        }
+
+        return json.toString();
     }
 }
