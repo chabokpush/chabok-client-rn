@@ -335,7 +335,11 @@ RCT_EXPORT_METHOD(getUserInfo:(RCTPromiseResolveBlock)resolve
 }
 
 #pragma mark - deeplink
-RCT_EXPORT_METHOD(appWillOpenUrl:(NSURL *) url) {
+RCT_EXPORT_METHOD(appWillOpenUrl:(NSString *) link) {
+    if(!link){
+        return;
+    }
+    NSURL *url = [[NSURL alloc] initWithString:link];
     [PushClientManager.defaultManager appWillOpenUrl:url];
 }
 
