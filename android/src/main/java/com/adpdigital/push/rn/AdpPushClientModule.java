@@ -1,9 +1,11 @@
 package com.adpdigital.push.rn;
 
 import android.content.BroadcastReceiver;
+import android.content.ComponentCallbacks;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Debug;
@@ -13,6 +15,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.adpdigital.push.AdpPushClient;
+import com.adpdigital.push.AppListener;
 import com.adpdigital.push.AppState;
 import com.adpdigital.push.Callback;
 import com.adpdigital.push.ChabokNotification;
@@ -25,6 +28,7 @@ import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.bridge.ReactBridge;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ReadableArray;
@@ -43,8 +47,10 @@ import org.json.JSONObject;
 
 import java.io.Console;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -70,6 +76,10 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
     private ReactApplicationContext mReactContext;
     private LocalBroadcastReceiver mLocalBroadcastReceiver;
     private Class activityClass;
+    private boolean setNotificationOpenedHandler = false;
+
+    public static ChabokNotification coldStartChabokNotification;
+    public static ChabokNotificationAction coldStartChabokNotificationAction;
 
     public AdpPushClient getChabok() {
         return chabok;
@@ -156,57 +166,8 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
             }
 
             public boolean notificationOpened(ChabokNotification message, ChabokNotificationAction notificationAction) {
-                WritableMap response = Arguments.createMap();
-                if (notificationAction.actionID != null){
-                    response.putString("actionID", notificationAction.actionID);
-                }
-                if (notificationAction.actionUrl != null){
-                    response.putString("actionUrl", notificationAction.actionUrl);
-                }
 
-                if (notificationAction.type == ChabokNotificationAction.a.Opened){
-                    response.putString("type", "opened");
-                } else if (notificationAction.type == ChabokNotificationAction.a.Dismissed) {
-                    response.putString("type", "dismissed");
-                } else if (notificationAction.type == ChabokNotificationAction.a.ActionTaken) {
-                    response.putString("type", "ActionTaken");
-                }
-
-                WritableMap msgMap = Arguments.createMap();
-
-                if (message.getTitle() != null) {
-                    msgMap.putString("title", message.getTitle());
-                }
-                if (message.getId() != null) {
-                    msgMap.putString("id", message.getId());
-                }
-
-                if (message.getText() != null) {
-                    msgMap.putString("body", message.getText());
-                }
-                if (message.getTrackId() != null){
-                    msgMap.putString("trackId", message.getTrackId());
-                }
-                if (message.getTopicName() != null){
-                    msgMap.putString("channel", message.getTopicName());
-                }
-
-                if (message.getSound() != null) {
-                    msgMap.putString("sound", message.getSound());
-                }
-
-                try {
-                    Bundle data = message.getExtras();
-                    if (data != null) {
-                        msgMap.putMap("data", toWritableMap(new JSONObject(bundleToJson(data))));
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                response.putMap("message", msgMap);
-
-                sendEvent("notificationOpened",response);
+                notificationOpened(message, notificationAction);
 
                 return false;
             }
@@ -223,6 +184,84 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
             WritableMap response = Arguments.createMap();
             response.putString("result", "failed");
             promise.resolve(response);
+        }
+    }
+
+    @ReactMethod
+    public void setNotificationOpenedHandler(){
+        this.setNotificationOpenedHandler = true;
+        if (coldStartChabokNotificationAction != null &&
+                coldStartChabokNotification != null){
+
+            notificationOpened(coldStartChabokNotification, coldStartChabokNotificationAction);
+
+            coldStartChabokNotification = null;
+            coldStartChabokNotificationAction = null;
+        }
+    }
+
+    public void notificationOpened(ChabokNotification message, ChabokNotificationAction notificationAction){
+        final WritableMap response = Arguments.createMap();
+        if (notificationAction.actionID != null){
+            response.putString("actionId", notificationAction.actionID);
+        }
+        if (notificationAction.actionUrl != null){
+            response.putString("actionUrl", notificationAction.actionUrl);
+        }
+
+        if (notificationAction.type == ChabokNotificationAction.a.Opened){
+            response.putString("actionType", "opened");
+        } else if (notificationAction.type == ChabokNotificationAction.a.Dismissed) {
+            response.putString("actionType", "dismissed");
+        } else if (notificationAction.type == ChabokNotificationAction.a.ActionTaken) {
+            response.putString("actionType", "action_taken");
+        }
+
+        WritableMap msgMap = Arguments.createMap();
+
+        if (message.getTitle() != null) {
+            msgMap.putString("title", message.getTitle());
+        }
+        if (message.getId() != null) {
+            msgMap.putString("id", message.getId());
+        }
+
+        if (message.getText() != null) {
+            msgMap.putString("body", message.getText());
+        }
+        if (message.getTrackId() != null){
+            msgMap.putString("trackId", message.getTrackId());
+        }
+        if (message.getTopicName() != null){
+            msgMap.putString("channel", message.getTopicName());
+        }
+
+        if (message.getSound() != null) {
+            msgMap.putString("sound", message.getSound());
+        }
+
+        try {
+            Bundle data = message.getExtras();
+            if (data != null) {
+                msgMap.putMap("data", toWritableMap(new JSONObject(bundleToJson(data))));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        response.putMap("message", msgMap);
+
+        if (!this.setNotificationOpenedHandler) {
+            if (coldStartChabokNotification == null) {
+                coldStartChabokNotification = message;
+            }
+            if (coldStartChabokNotificationAction == null) {
+                coldStartChabokNotificationAction = notificationAction;
+            }
+        }
+
+        if (mReactContext.hasActiveCatalystInstance()) {
+            sendEvent("notificationOpened", response);
         }
     }
 
@@ -811,8 +850,10 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
     @ReactMethod
     public void setUserInfo(ReadableMap data){
         if (chabok != null) {
-            HashMap<String, Object> userInfo = new HashMap<String, Object>(toMap(data));
-            chabok.setUserInfo(userInfo);
+            if (data != null) {
+                HashMap<String, Object> userInfo = new HashMap<String, Object>(toMap(data));
+                chabok.setUserInfo(userInfo);
+            }
         }
     }
 
@@ -1033,6 +1074,42 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
         }
 
         return array;
+    }
+
+    private static Map<String, Object> toMap(JSONObject object) throws JSONException {
+        Map<String, Object> map = new HashMap<String, Object>();
+
+        Iterator<String> keysItr = object.keys();
+        while(keysItr.hasNext()) {
+            String key = keysItr.next();
+            Object value = object.get(key);
+
+            if(value instanceof JSONArray) {
+                value = toList((JSONArray) value);
+            }
+
+            else if(value instanceof JSONObject) {
+                value = toMap((JSONObject) value);
+            }
+            map.put(key, value);
+        }
+        return map;
+    }
+
+    private static List<Object> toList(JSONArray array) throws JSONException {
+        List<Object> list = new ArrayList<Object>();
+        for(int i = 0; i < array.length(); i++) {
+            Object value = array.get(i);
+            if(value instanceof JSONArray) {
+                value = toList((JSONArray) value);
+            }
+
+            else if(value instanceof JSONObject) {
+                value = toMap((JSONObject) value);
+            }
+            list.add(value);
+        }
+        return list;
     }
 
     private static String bundleToJson(Bundle bundle) {
