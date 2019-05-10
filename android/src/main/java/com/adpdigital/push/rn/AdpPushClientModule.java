@@ -876,6 +876,9 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
 
     @ReactMethod
     public void appWillOpenUrl(final String link){
+        if (link == null){
+            return;
+        }
         if (chabok != null){
             Uri uri = Uri.parse(link);
             chabok.appWillOpenUrl(uri);
