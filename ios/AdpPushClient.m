@@ -29,7 +29,7 @@ RCT_EXPORT_METHOD(init:(NSString *) appId
                   devMode:(BOOL) devMode
                   promise:(RCTPromiseResolveBlock)resolve
                   rejecter:(RCTPromiseRejectBlock)reject) {
-  
+    
     [PushClientManager setDevelopment:devMode];
     NSArray *appIds = [appId componentsSeparatedByString:@"/"];
     self.appId = appIds.firstObject;
@@ -75,7 +75,7 @@ RCT_EXPORT_METHOD(initializeApp:(NSDictionary *) options
         NSString *password = [options valueForKey:@"password"];
         BOOL devMode = [[options valueForKey:@"devMode"] boolValue];
         NSArray *appIds = [appId componentsSeparatedByString:@"/"];
-      
+        
         [self init:appIds.firstObject
             apiKey:apiKey
           username:username
@@ -417,13 +417,13 @@ RCT_EXPORT_METHOD(appWillOpenUrl:(NSURL *) url) {
     NSString *clickUrl = [payload valueForKey:@"clickUrl"];
     
     if ([actionId containsString:UNNotificationDismissActionIdentifier]) {
-        actionType = @"DISMISSED";
+        actionType = @"dismissed";
         actionId = nil;
     } else if ([actionId containsString:UNNotificationDefaultActionIdentifier]) {
-        actionType = @"OPENED";
+        actionType = @"opened";
         actionId = nil;
     } else {
-        actionType = @"ACTION_TAKEN";
+        actionType = @"action_taken";
         
         actionUrl = [self getActionUrlFrom:actionId actions:actions];
     }
