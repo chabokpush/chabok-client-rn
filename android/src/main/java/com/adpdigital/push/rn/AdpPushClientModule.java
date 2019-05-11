@@ -167,7 +167,7 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
 
             public boolean notificationOpened(ChabokNotification message, ChabokNotificationAction notificationAction) {
 
-                notificationOpened(message, notificationAction);
+                notificationOpenedEvent(message, notificationAction);
 
                 return false;
             }
@@ -193,14 +193,14 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
         if (coldStartChabokNotificationAction != null &&
                 coldStartChabokNotification != null){
 
-            notificationOpened(coldStartChabokNotification, coldStartChabokNotificationAction);
+            notificationOpenedEvent(coldStartChabokNotification, coldStartChabokNotificationAction);
 
             coldStartChabokNotification = null;
             coldStartChabokNotificationAction = null;
         }
     }
 
-    public void notificationOpened(ChabokNotification message, ChabokNotificationAction notificationAction){
+    private void notificationOpenedEvent(ChabokNotification message, ChabokNotificationAction notificationAction){
         final WritableMap response = Arguments.createMap();
         if (notificationAction.actionID != null){
             response.putString("actionId", notificationAction.actionID);
