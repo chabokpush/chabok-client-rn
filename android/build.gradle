@@ -53,4 +53,6 @@ dependencies {
 
     compile 'me.leolin:ShortcutBadger:1.1.22@aar'
     compile 'com.adpdigital.push:chabok-lib:2.16.0'
+    compile "com.google.android.gms:play-services-gcm:10.2.6"
+    compile 'com.android.installreferrer:installreferrer:1.0'
 }
