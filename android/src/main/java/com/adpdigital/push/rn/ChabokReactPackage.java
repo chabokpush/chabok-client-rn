@@ -1,7 +1,10 @@
 package com.adpdigital.push.rn;
 
 import com.adpdigital.push.AdpPushClient;
+import com.adpdigital.push.ChabokNotification;
+import com.adpdigital.push.ChabokNotificationAction;
 import com.facebook.react.ReactPackage;
+import com.facebook.react.bridge.JavaScriptModule;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.uimanager.ViewManager;
@@ -34,4 +37,10 @@ public class ChabokReactPackage implements ReactPackage {
     public List<ViewManager> createViewManagers(ReactApplicationContext reactContext) {
         return Collections.emptyList();
     }
+
+    public void notificationOpened(ChabokNotification message, ChabokNotificationAction notificationAction){
+        AdpPushClientModule.coldStartChabokNotification = message;
+        AdpPushClientModule.coldStartChabokNotificationAction = notificationAction;
+    }
+
 }
