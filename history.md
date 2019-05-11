@@ -12,7 +12,7 @@
 - Add `setDefaultTracker` for tracking pre-install campaigns.
 - Add `appWillOpenUrl` method for sending attribution information in deeplinks.
 - Add `notificationOpened` event for receiving click on notifications (actions and dismiss).
-- `registerAsGuest` method added for applications with guest users, and for tracking installs on app launch (just like Adjust).
+- Add `registerAsGuest` method for applications with guest users, and for tracking installs on app launch (just like Adjust).
 
 #### Upgrade:
 
