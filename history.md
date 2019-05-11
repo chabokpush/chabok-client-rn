@@ -1,5 +1,109 @@
 ## History
 
+### v1.3.0 (11/05/2019)
+
+#### Changes:
+
+- Update Chabok iOS SDK ([v1.19.0](https://github.com/chabokpush/chabok-client-ios/releases/tag/v1.19.0))
+
+- Update Chabok android SDK ([v2.16.0](https://github.com/chabokpush/chabok-client-android/releases/tag/v2.16.0))
+
+- Add `setUserInfo` method to send user information.
+- Add `setDefaultTracker` for tracking pre-install campaigns.
+- Add `appWillOpenUrl` method for sending attribution information in deeplinks.
+- Add `notificationOpened` event for receiving click on notifications (actions and dismiss).
+- Add `registerAsGuest` method for applications with guest users, and for tracking installs on app launch (just like Adjust).
+
+#### Upgrade:
+
+* Android: 
+- Support Google play `INSTALL_REFERRER`. Add the following dependency to your gradle.
+
+``` groovy
+    implementation 'com.android.installreferrer:installreferrer:1.0'
+```
+
+- To get notification action, implement the following code in `MainApplication` class in `onCreate` method:
+
+```diff
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        SoLoader.init(this, /* native exopackage */ false);
+        
+        if (chabok == null) {
+            chabok = AdpPushClient.init(
+                    getApplicationContext(),
+                    MainActivity.class,
+                    "APP_ID/SENDER_ID",
+                    "API_KEY",
+                    "USERNAME",
+                    "PASSWORD"
+            );
+
++            chabok.addNotificationHandler(new NotificationHandler(){
++                @Override
++                public boolean notificationOpened(ChabokNotification message, ChabokNotificationAction notificationAction) {
++                    ChabokReactPackage.notificationOpened(message, notificationAction);
++                   return super.notificationOpened(message, notificationAction);
++                }
++            });
+        }
+    }
+
+```
+
+* iOS:
+
+- To get advertising id, add `AdSupport.framework` to  **Linked Frameworks and Libraries** of your target project
+- Add `notificationOpened:` to send notification action event to React-Native 
+- Add `registerToUNUserNotificationCenter` method to get notification actions by implementing the following code:
+(To display rich notification, make sure to read our [documentation]())
+```diff
+
++ @interface AppDelegate ()<PushClientManagerDelegate>
+
++ @end
+
+@implementation AppDelegate
+
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+  {
+    
++    [PushClientManager.defaultManager addDelegate:self];
++    [AdpPushClient registerToUNUserNotificationCenter];
+  
+    ...
+    
+    return true;
+  }
+
++ -(void) userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler{
++     [AdpPushClient notificationOpened:response.notification.request.content.userInfo actionId:response.actionIdentifier];
++ }
+  
++ -(void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler{
++     [AdpPushClient notificationOpened:userInfo];
++ }
+  
++ -(void) application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo{
++    [AdpPushClient notificationOpened:userInfo];
++ }
+  
++ -(void)application:(UIApplication *)application handleActionWithIdentifier:(NSString *)identifier forRemoteNotification:(NSDictionary *)userInfo completionHandler:(void (^)())completionHandler{
++     [AdpPushClient notificationOpened:userInfo actionId:identifier];
++ }
+
+``` 
+
+### v1.2.1 (06/03/2019)
+
+#### Changes:
+
+- Update Chabok iOS SDK ([v1.18.1](https://github.com/chabokpush/chabok-client-ios/releases/tag/v1.18.1))
+- Update Chabok android SDK ([v2.14.2](https://github.com/chabokpush/chabok-client-android/releases/tag/v2.14.2))
+
 ### v1.2.0 (2/12/2018)
 
 #### Changes:
