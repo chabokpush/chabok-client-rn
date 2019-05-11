@@ -38,7 +38,7 @@ public class ChabokReactPackage implements ReactPackage {
         return Collections.emptyList();
     }
 
-    public void notificationOpened(ChabokNotification message, ChabokNotificationAction notificationAction){
+    public static void notificationOpened(ChabokNotification message, ChabokNotificationAction notificationAction){
         AdpPushClientModule.coldStartChabokNotification = message;
         AdpPushClientModule.coldStartChabokNotificationAction = notificationAction;
     }
