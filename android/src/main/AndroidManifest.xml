@@ -7,7 +7,8 @@
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW"/>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <uses-permission android:name="${applicationId}.permission.C2D_MESSAGE"/>
-
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <application>
 
         <receiver android:name="PushMessageReceiver">
@@ -37,7 +38,7 @@
                 <action android:name="com.android.vending.INSTALL_REFERRER" />
             </intent-filter>
         </receiver>
-
+        <service android:enabled="true" android:name=".LocationHostService" />
     </application>
 
 </manifest>
