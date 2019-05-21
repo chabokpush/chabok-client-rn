@@ -6,9 +6,14 @@
 //  Copyright © 2018 Facebook. All rights reserved.
 //
 
+@import UserNotifications;
 #import "React/RCTBridgeModule.h"
 #import "React/RCTEventEmitter.h"
 
-@interface AdpPushClient : RCTEventEmitter <RCTBridgeModule>
-
+@interface AdpPushClient : RCTEventEmitter <RCTBridgeModule,RCTInvalidating>
+    
++(NSDictionary *) notificationOpened:(NSDictionary *) payload actionId:(NSString *) actionId;
++(NSDictionary *) notificationOpened:(NSDictionary *) payload;
++(void) registerToUNUserNotificationCenter;
+    
 @end

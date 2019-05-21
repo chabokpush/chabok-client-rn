@@ -22,12 +22,12 @@ allprojects {
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 25
+    compileSdkVersion 26
     buildToolsVersion "26.0.2"
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 23
+        targetSdkVersion 26
         versionCode 1
         versionName "1.0"
 
@@ -48,10 +48,11 @@ dependencies {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     compile "com.facebook.react:react-native:+"  // From node_modules
-    compile 'com.android.support:appcompat-v7:26.+'
+    compile 'com.android.support:appcompat-v7:26.0.2'
     testCompile 'junit:junit:4.12'
-    compile 'com.google.android.gms:play-services-gcm:10.2.6'
 
-    compile 'me.leolin:ShortcutBadger:1.1.18@aar'
-    compile 'com.adpdigital.push:chabok-lib:2.11.3'
+    compile 'me.leolin:ShortcutBadger:1.1.22@aar'
+    compile 'com.adpdigital.push:chabok-lib:2.16.0'
+    compile "com.google.android.gms:play-services-gcm:10.2.6"
+    compile 'com.android.installreferrer:installreferrer:1.0'
 }
