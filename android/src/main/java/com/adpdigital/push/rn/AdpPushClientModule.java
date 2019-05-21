@@ -6,9 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.res.Configuration;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Debug;
+import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.text.TextUtils;
@@ -24,6 +26,10 @@ import com.adpdigital.push.ConnectionStatus;
 import com.adpdigital.push.EventMessage;
 import com.adpdigital.push.NotificationHandler;
 import com.adpdigital.push.PushMessage;
+import com.adpdigital.push.location.LocationAccuracy;
+import com.adpdigital.push.location.LocationManager;
+import com.adpdigital.push.location.LocationParams;
+import com.adpdigital.push.location.OnLocationUpdateListener;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
 import com.facebook.react.bridge.Promise;
@@ -61,7 +67,7 @@ import static com.facebook.react.bridge.UiThreadUtil.runOnUiThread;
  * mohammad on 12/13/17.
  */
 
-class AdpPushClientModule extends ReactContextBaseJavaModule implements LifecycleEventListener {
+class AdpPushClientModule extends ReactContextBaseJavaModule implements LifecycleEventListener, OnLocationUpdateListener {
 
     private static final String TAG = "AdpPushClientModule";
     private static final String NAME = "AdpPushClient";
@@ -77,7 +83,7 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
     private LocalBroadcastReceiver mLocalBroadcastReceiver;
     private Class activityClass;
     private boolean setNotificationOpenedHandler = false;
-
+    private LocationManager locationManger;
     public static ChabokNotification coldStartChabokNotification;
     public static ChabokNotificationAction coldStartChabokNotificationAction;
 
@@ -93,12 +99,85 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
         this.mLocalBroadcastReceiver = new LocalBroadcastReceiver();
         localBroadcastManager = LocalBroadcastManager.getInstance(reactContext);
         localBroadcastManager.registerReceiver(mLocalBroadcastReceiver, new IntentFilter(Constants.ACTION_CONNECTION_STATUS));
-
+        locationManger = LocationManager.init(getReactApplicationContext());
         chabok = AdpPushClient.get();
         if (chabok != null) {
             attachChabokClient();
         }
     }
+
+    @ReactMethod
+    public void initLocation() {
+        Intent intent = new Intent(getReactApplicationContext(), LocationHostService.class);
+        locationManger.addCallbackIntent(intent);
+        locationManger.addListener(this);
+    }
+
+    @ReactMethod
+    public void enableBackgroundMode() {
+        locationManger.enableBackgroundMode();
+    }
+    @ReactMethod
+    public void enableLocationOnLaunch() {
+        locationManger.enableLocationOnLaunch();
+    }
+
+    @ReactMethod
+    public void disableBackgroundMode() {
+        locationManger.disableBackgroundMode();
+    }
+
+    @ReactMethod
+    public void getLastLocation(Promise promise) {
+        Location location = locationManger.getLastLocation();
+        WritableMap response = Arguments.createMap();
+        response.putDouble("Accuracy", location.getAccuracy());
+        response.putDouble("Altitude", location.getAltitude());
+        response.putDouble("Longitude", location.getLongitude());
+        response.putDouble("Latitude", location.getLatitude());
+        response.putString("Provider", location.getProvider());
+        promise.resolve(response);
+    }
+
+
+
+    @ReactMethod
+    public void startLocationUpdates(Integer distance, Integer interval) {
+        LocationParams params = new LocationParams.Builder().setAccuracy(LocationAccuracy.HIGH).setDistance(distance).setInterval(interval).build();
+        locationManger.startLocationUpdates(params);
+    }
+
+    @Override
+    public void onLocationUpdated(Location location) {
+        WritableMap response = Arguments.createMap();
+        response.putDouble("Accuracy", location.getAccuracy());
+        response.putDouble("Altitude", location.getAltitude());
+        response.putDouble("Longitude", location.getLongitude());
+        response.putDouble("Latitude", location.getLatitude());
+        response.putString("Provider", location.getProvider());
+        sendEvent("onLocationUpdated", response);
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        sendEvent("ChabokLocationOnConnected", "Connected");
+    }
+
+    @Override
+    public void onSuspended() {
+        sendEvent("ChabokLocationOnSuspended", "Suspended");
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+        sendEvent("ChabokLocationOnConnectionFailed", connectionResult.getErrorMessage());
+    }
+
+    @Override
+    public void onGeofencesRegisteredSuccessful() {
+        sendEvent("ChabokLocationOnGeofencesRegisteredSuccessful", "GeofencesRegisteredSuccessful");
+    }
+
 
     @ReactMethod
     public void initializeApp(ReadableMap options, Promise promise) {
@@ -955,6 +1034,8 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
             }
         }, intentFilter);
     }
+
+
 
     public class LocalBroadcastReceiver extends BroadcastReceiver {
         @Override
