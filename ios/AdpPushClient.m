@@ -366,6 +366,10 @@ RCT_EXPORT_METHOD(getUserAttributes:(RCTPromiseResolveBlock)resolve
     resolve(PushClientManager.defaultManager.userAttributes);
 }
 
+RCT_EXPORT_METHOD(incrementUserAttribute:(NSString *) attribute value:(NSInteger) value) {
+    [PushClientManager.defaultManager incrementUserAttribute:attribute value:value];
+}
+
     }
     
 #pragma mark - deeplink

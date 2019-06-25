@@ -921,6 +921,13 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
     }
 
     @ReactMethod
+    public void incrementUserAttribute(String attribute, int value) {
+        if (chabok != null) {
+            chabok.incrementUserAttribute(attribute, value);
+        }
+    }
+
+    @ReactMethod
     public void setDefaultTracker(final String defaultTracker){
         if (chabok != null){
             chabok.setDefaultTracker(defaultTracker);
