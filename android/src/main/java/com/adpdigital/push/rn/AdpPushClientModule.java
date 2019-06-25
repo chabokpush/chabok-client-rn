@@ -928,6 +928,13 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
     }
 
     @ReactMethod
+    public void setDefaultNotificationChannel(String channelName) {
+        if (chabok != null) {
+            chabok.setDefaultNotificationChannel(channelName);
+        }
+    }
+
+    @ReactMethod
     public void setDefaultTracker(final String defaultTracker){
         if (chabok != null){
             chabok.setDefaultTracker(defaultTracker);

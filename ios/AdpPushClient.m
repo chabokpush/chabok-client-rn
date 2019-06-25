@@ -370,8 +370,9 @@ RCT_EXPORT_METHOD(incrementUserAttribute:(NSString *) attribute value:(NSInteger
     [PushClientManager.defaultManager incrementUserAttribute:attribute value:value];
 }
 
-    }
-    
+RCT_EXPORT_METHOD(setDefaultNotificationChannel) {
+}
+
 #pragma mark - deeplink
     RCT_EXPORT_METHOD(appWillOpenUrl:(NSString *) link) {
         if(!link){
