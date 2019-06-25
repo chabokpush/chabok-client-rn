@@ -330,6 +330,25 @@
         [PushClientManager.defaultManager track:trackName data:data];
     }
     
+RCT_EXPORT_METHOD(trackPurchase:(NSString *) eventName data:(NSDictionary *) data) {
+    ChabokEvent *chabokEvent = [[ChabokEvent alloc] init];
+    double revenue = 0;
+    NSString *currency = nil;
+    if (![data valueForKey:@"revenue"]) {
+        [NSException raise:@"Invalid revenue" format:@"Please provide a revenue."];
+    }
+    chabokEvent.revenue = [[data valueForKey:@"revenue"] doubleValue];
+    if ([data valueForKey:@"currency"]) {
+        chabokEvent.currency = [data valueForKey:@"currency"];
+    }
+    if ([data valueForKey:@"data"]) {
+        chabokEvent.data = [data valueForKey:@"data"];
+    }
+    
+    [PushClientManager.defaultManager trackPurchase:eventName
+                                        chabokEvent:chabokEvent];
+}
+
 #pragma mark - default tracker
     RCT_EXPORT_METHOD(setDefaultTracker:(NSString *) defaultTracker) {
         [PushClientManager.defaultManager setDefaultTracker:defaultTracker];;

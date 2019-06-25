@@ -679,6 +679,39 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
     }
 
     @ReactMethod
+    public void trackPurchase(String eventName, ReadableMap data) {
+        try {
+            JSONObject jsonData = toJsonObject(data);
+            double revenue = 0;
+            String currency = null;
+            JSONObject eventData = null;
+            if (!jsonData.has("revenue")){
+                throw new IllegalArgumentException("Invalid revenue");
+            }
+            revenue = jsonData.getDouble("revenue");
+            if (jsonData.has("currency")) {
+                currency = jsonData.getString("currency");
+            }
+
+            if (jsonData.has("data")) {
+                eventData = jsonData.getJSONObject("data");
+            }
+
+            ChabokEvent chabokEvent = new ChabokEvent(revenue);
+            if (currency != null){
+                chabokEvent.setRevenue(revenue, currency);
+            }
+
+            if (eventData != null){
+                chabokEvent.setData(eventData);
+            }
+
+            chabok.trackPurchase(eventName, chabokEvent);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+    @ReactMethod
     public void subscribeEvent(final String eventName, final Promise promise) {
         if (TextUtils.isEmpty(eventName)) {
             promise.reject(new IllegalArgumentException("eventName parameter is null or empty"));
