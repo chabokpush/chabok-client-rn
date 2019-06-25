@@ -711,6 +711,24 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
             e.printStackTrace();
         }
     }
+
+    @ReactMethod
+    public void setOnDeeplinkResponseListener(final boolean shouldLaunchDeeplink, final Promise promise) {
+        if (chabok != null) {
+            chabok.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
+                @Override
+                public boolean launchReceivedDeeplink(Uri uri) {
+                    if (uri != null){
+                        promise.resolve(uri);
+                    } else {
+                        return false;
+                    }
+                    return shouldLaunchDeeplink;
+                }
+            });
+        }
+    }
+
     @ReactMethod
     public void subscribeEvent(final String eventName, final Promise promise) {
         if (TextUtils.isEmpty(eventName)) {

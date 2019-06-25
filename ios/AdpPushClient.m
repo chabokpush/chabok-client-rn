@@ -11,11 +11,13 @@
 #import <AdpPushClient/AdpPushClient.h>
 
 @interface AdpPushClient()<PushClientManagerDelegate>
-    
-    @property (nonatomic, strong) NSString *appId;
-    @property (class) NSDictionary *coldStartNotificationResult;
-    
-    @end
+
+@property (nonatomic, strong) NSString *appId;
+@property (nonatomic) BOOL shouldLaunchDeeplink;
+@property (nonatomic, strong) RCTPromiseResolveBlock getDeepLinkResponseCallback;
+@property (class) NSDictionary *coldStartNotificationResult;
+
+@end
 
 @implementation AdpPushClient
     
@@ -372,18 +374,33 @@ RCT_EXPORT_METHOD(getUserAttributes:(RCTPromiseResolveBlock)resolve
             return;
         }
         NSURL *url = [[NSURL alloc] initWithString:link];
-        [PushClientManager.defaultManager appWillOpenUrl:url];
-    }
-    
-    RCT_EXPORT_METHOD(setNotificationOpenedHandler) {
-        if (self.bridge) {
-            if (_coldStartNotificationResult) {
+    [PushClientManager.defaultManager appWillOpenUrl:url];
+}
+
+RCT_EXPORT_METHOD(setOnDeeplinkResponseListener:(BOOL) shouldLaunchDeeplink resolve:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
+    self.shouldLaunchDeeplink = shouldLaunchDeeplink;
+    self.getDeepLinkResponseCallback = resolve;
+}
+
+RCT_EXPORT_METHOD(setNotificationOpenedHandler) {
+    if (self.bridge) {
+        if (_coldStartNotificationResult) {
                 [self sendEventWithName:@"notificationOpened" body:_coldStartNotificationResult];
             }
         }
-    }
-    
+}
+
 #pragma mark - chabok delegate methods
+- (BOOL)chabokDeeplinkResponse:(NSURL *)deeplink {
+    if(deeplink && self.getDeepLinkResponseCallback){
+        self.getDeepLinkResponseCallback(deeplink);
+    } else{
+        return NO;
+    }
+    return self.shouldLaunchDeeplink;
+}
+
 - (NSArray<NSString *> *)supportedEvents{
     return @[@"connectionStatus",@"onEvent",@"onMessage", @"ChabokMessageReceived", @"onSubscribe", @"onUnsubscribe", @"onRegister", @"notificationOpened"];
 }
