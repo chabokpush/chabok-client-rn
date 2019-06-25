@@ -18,11 +18,13 @@ import com.adpdigital.push.AdpPushClient;
 import com.adpdigital.push.AppListener;
 import com.adpdigital.push.AppState;
 import com.adpdigital.push.Callback;
+import com.adpdigital.push.ChabokEvent;
 import com.adpdigital.push.ChabokNotification;
 import com.adpdigital.push.ChabokNotificationAction;
 import com.adpdigital.push.ConnectionStatus;
 import com.adpdigital.push.EventMessage;
 import com.adpdigital.push.NotificationHandler;
+import com.adpdigital.push.OnDeeplinkResponseListener;
 import com.adpdigital.push.PushMessage;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -169,7 +171,7 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
 
                 notificationOpenedEvent(message, notificationAction);
 
-                return false;
+                return true;
             }
         });
 
@@ -209,11 +211,11 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
             response.putString("actionUrl", notificationAction.actionUrl);
         }
 
-        if (notificationAction.type == ChabokNotificationAction.a.Opened){
+        if (notificationAction.type == ChabokNotificationAction.ActionType.Opened){
             response.putString("actionType", "opened");
-        } else if (notificationAction.type == ChabokNotificationAction.a.Dismissed) {
+        } else if (notificationAction.type == ChabokNotificationAction.ActionType.Dismissed) {
             response.putString("actionType", "dismissed");
-        } else if (notificationAction.type == ChabokNotificationAction.a.ActionTaken) {
+        } else if (notificationAction.type == ChabokNotificationAction.ActionType.ActionTaken) {
             response.putString("actionType", "action_taken");
         }
 
