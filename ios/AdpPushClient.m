@@ -353,16 +353,17 @@ RCT_EXPORT_METHOD(trackPurchase:(NSString *) eventName data:(NSDictionary *) dat
     RCT_EXPORT_METHOD(setDefaultTracker:(NSString *) defaultTracker) {
         [PushClientManager.defaultManager setDefaultTracker:defaultTracker];;
     }
-    
-#pragma mark - userInfo
-    RCT_EXPORT_METHOD(setUserInfo:(NSDictionary *) userInfo) {
-        [PushClientManager.defaultManager setUserInfo:userInfo];;
-    }
-    
-    RCT_EXPORT_METHOD(getUserInfo:(RCTPromiseResolveBlock)resolve
-                      rejecter:(RCTPromiseRejectBlock)reject) {
-        NSDictionary *userInfo = PushClientManager.defaultManager.userInfo;
-        resolve(userInfo);
+
+#pragma mark - user attributes
+RCT_EXPORT_METHOD(setUserAttributes:(NSDictionary *) attributes) {
+    [PushClientManager.defaultManager setUserAttributes:attributes];
+}
+
+RCT_EXPORT_METHOD(getUserAttributes:(RCTPromiseResolveBlock)resolve
+                  rejecter:(RCTPromiseRejectBlock)reject) {
+    resolve(PushClientManager.defaultManager.userAttributes);
+}
+
     }
     
 #pragma mark - deeplink
