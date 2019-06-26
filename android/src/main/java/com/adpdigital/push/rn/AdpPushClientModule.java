@@ -719,7 +719,7 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
                 @Override
                 public boolean launchReceivedDeeplink(Uri uri) {
                     if (uri != null){
-                        promise.resolve(uri);
+                        promise.resolve(uri.toString());
                     } else {
                         return false;
                     }
