@@ -18,11 +18,13 @@ import com.adpdigital.push.AdpPushClient;
 import com.adpdigital.push.AppListener;
 import com.adpdigital.push.AppState;
 import com.adpdigital.push.Callback;
+import com.adpdigital.push.ChabokEvent;
 import com.adpdigital.push.ChabokNotification;
 import com.adpdigital.push.ChabokNotificationAction;
 import com.adpdigital.push.ConnectionStatus;
 import com.adpdigital.push.EventMessage;
 import com.adpdigital.push.NotificationHandler;
+import com.adpdigital.push.OnDeeplinkResponseListener;
 import com.adpdigital.push.PushMessage;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.LifecycleEventListener;
@@ -169,7 +171,7 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
 
                 notificationOpenedEvent(message, notificationAction);
 
-                return false;
+                return true;
             }
         });
 
@@ -209,11 +211,11 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
             response.putString("actionUrl", notificationAction.actionUrl);
         }
 
-        if (notificationAction.type == ChabokNotificationAction.a.Opened){
+        if (notificationAction.type == ChabokNotificationAction.ActionType.Opened){
             response.putString("actionType", "opened");
-        } else if (notificationAction.type == ChabokNotificationAction.a.Dismissed) {
+        } else if (notificationAction.type == ChabokNotificationAction.ActionType.Dismissed) {
             response.putString("actionType", "dismissed");
-        } else if (notificationAction.type == ChabokNotificationAction.a.ActionTaken) {
+        } else if (notificationAction.type == ChabokNotificationAction.ActionType.ActionTaken) {
             response.putString("actionType", "action_taken");
         }
 
@@ -677,6 +679,57 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
     }
 
     @ReactMethod
+    public void trackPurchase(String eventName, ReadableMap data) {
+        try {
+            JSONObject jsonData = toJsonObject(data);
+            double revenue = 0;
+            String currency = null;
+            JSONObject eventData = null;
+            if (!jsonData.has("revenue")){
+                throw new IllegalArgumentException("Invalid revenue");
+            }
+            revenue = jsonData.getDouble("revenue");
+            if (jsonData.has("currency")) {
+                currency = jsonData.getString("currency");
+            }
+
+            if (jsonData.has("data")) {
+                eventData = jsonData.getJSONObject("data");
+            }
+
+            ChabokEvent chabokEvent = new ChabokEvent(revenue);
+            if (currency != null){
+                chabokEvent.setRevenue(revenue, currency);
+            }
+
+            if (eventData != null){
+                chabokEvent.setData(eventData);
+            }
+
+            chabok.trackPurchase(eventName, chabokEvent);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @ReactMethod
+    public void setOnDeeplinkResponseListener(final boolean shouldLaunchDeeplink, final Promise promise) {
+        if (chabok != null) {
+            chabok.setOnDeeplinkResponseListener(new OnDeeplinkResponseListener() {
+                @Override
+                public boolean launchReceivedDeeplink(Uri uri) {
+                    if (uri != null){
+                        promise.resolve(uri.toString());
+                    } else {
+                        return false;
+                    }
+                    return shouldLaunchDeeplink;
+                }
+            });
+        }
+    }
+
+    @ReactMethod
     public void subscribeEvent(final String eventName, final Promise promise) {
         if (TextUtils.isEmpty(eventName)) {
             promise.reject(new IllegalArgumentException("eventName parameter is null or empty"));
@@ -848,22 +901,36 @@ class AdpPushClientModule extends ReactContextBaseJavaModule implements Lifecycl
     }
 
     @ReactMethod
-    public void setUserInfo(ReadableMap data){
+    public void setUserAttributes(ReadableMap data){
         if (chabok != null) {
             if (data != null) {
                 HashMap<String, Object> userInfo = new HashMap<String, Object>(toMap(data));
-                chabok.setUserInfo(userInfo);
+                chabok.setUserAttributes(userInfo);
             }
         }
     }
 
     @ReactMethod
-    public void getUserInfo(final Promise promise) {
+    public void getUserAttributes(final Promise promise) {
         if (chabok != null) {
-            promise.resolve(chabok.getUserInfo());
+            promise.resolve(chabok.getUserAttributes());
         } else {
-            Throwable throwable = new Throwable("SDK not initialized");
+            Throwable throwable = new Throwable("Chabok SDK is not initialized");
             promise.reject(throwable);
+        }
+    }
+
+    @ReactMethod
+    public void incrementUserAttribute(String attribute, int value) {
+        if (chabok != null) {
+            chabok.incrementUserAttribute(attribute, value);
+        }
+    }
+
+    @ReactMethod
+    public void setDefaultNotificationChannel(String channelName) {
+        if (chabok != null) {
+            chabok.setDefaultNotificationChannel(channelName);
         }
     }
 
